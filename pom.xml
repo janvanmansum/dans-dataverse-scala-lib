@@ -53,5 +53,6 @@
     <modules>
         <module>lib</module>
         <module>examples</module>
+        <module>easy-dv</module>
     </modules>
 </project>

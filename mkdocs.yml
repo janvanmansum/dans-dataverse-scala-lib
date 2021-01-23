@@ -26,6 +26,7 @@ nav:
   - Manual: index.md
   - API: api.md
   - Examples: examples.md
+  - 'Command-line client': easy-dv.md
 
 plugins:
   - markdownextradata

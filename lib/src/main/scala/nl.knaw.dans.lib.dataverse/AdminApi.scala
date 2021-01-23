@@ -16,8 +16,7 @@
 package nl.knaw.dans.lib.dataverse
 
 import java.net.URI
-
-import nl.knaw.dans.lib.dataverse.model.DatabaseSetting
+import nl.knaw.dans.lib.dataverse.model.{ DatabaseSetting, Workflow }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
 import scala.util.Try
@@ -30,7 +29,7 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
   protected val sendApiTokenViaBasicAuth = false
   protected val unblockKey: Option[String] = configuration.unblockKey
   protected val builtinUserKey: Option[String] = Option.empty
-  protected val apiPrefix: String = ""
+  protected val apiPrefix: String = "api/admin"
   protected val apiVersion: Option[String] = Option.empty // No version allowed here
 
   /**
@@ -42,7 +41,7 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
    */
   def getSingleUser(id: String): Try[DataverseResponse[model.AuthenticatedUser]] = {
     trace(id)
-    get[model.AuthenticatedUser](s"api/admin/authenticatedUsers/$id")
+    get[model.AuthenticatedUser](s"authenticatedUsers/$id")
   }
 
   /**
@@ -53,7 +52,7 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
    */
   def putDatabaseSetting(settingName: String, value: String): Try[DataverseResponse[DatabaseSetting]] = {
     trace(settingName, value)
-    put[DatabaseSetting](s"api/admin/settings/${ settingName }", value)
+    put[DatabaseSetting](s"settings/${ settingName }", value)
   }
 
   /**
@@ -74,7 +73,7 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
    */
   def deleteDatabaseSetting(settingName: String): Try[DataverseResponse[Nothing]] = {
     trace(settingName)
-    deletePath[Nothing](s"api/admin/setting/${ settingName }")
+    deletePath[Nothing](s"setting/${ settingName }")
   }
 
   /**
@@ -86,4 +85,29 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
     ???
     // TODO: getDatabaseSetting
   }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @return
+   */
+  def getWorkflows: Try[DataverseResponse[List[Workflow]]] = {
+    trace(())
+    get[List[Workflow]]("workflows")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @return
+   */
+  def getWorkflow(id: Int): Try[DataverseResponse[Workflow]] = {
+    trace(id)
+    get[Workflow](s"workflows/$id")
+  }
+
+//  def addWorkflow(workflow: Workflow): Try[DataverseResponse[Any]] = {
+//    trace(workflow)
+//    postJson[Workflow]()
+//  }
+
+
 }
