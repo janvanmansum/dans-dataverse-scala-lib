@@ -15,10 +15,40 @@
  */
 package nl.knaw.dans.easydv
 
-import scala.language.reflectiveCalls
-import scala.util.{ Failure, Try }
-import scala.language.postfixOps
+import better.files.File
+import nl.knaw.dans.easydv.dispatcher.Dataverse
+import nl.knaw.dans.lib.dataverse.{ DataverseException, DataverseInstance }
+import nl.knaw.dans.lib.error.TryExtensions
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
+import java.io.PrintStream
+import scala.language.{ postfixOps, reflectiveCalls }
+import scala.util.Try
 
+object Command extends App with DebugEnhancedLogging {
+  type FeedBackMessage = String
+  implicit val resultOutput: PrintStream = Console.out
 
+  val configuration = Configuration(File(System.getProperty("app.home")))
+  logger.debug(s"Read configuration: $configuration")
+  val commandLine: CommandLineOptions = new CommandLineOptions(args, configuration) {
+    verify()
+  }
+  val instance = new DataverseInstance(configuration.dvConfig)
+
+  val result: Try[FeedBackMessage] = commandLine.subcommands match {
+    case commandLine.dataverse :: _ => Dataverse.dispatch(commandLine, instance.dataverse(commandLine.dataverse.alias()))
+  }
+
+  result.doIfSuccess(msg => Console.err.println(s"OK: $msg"))
+    .doIfFailure {
+      case de: DataverseException =>
+        Console.err.println(s"ERROR: ${ de.getMessage }")
+        System.exit(1)
+      case t =>
+        Console.err.println(s"ERROR: ${ t.getClass.getSimpleName }: ${ t.getMessage }")
+        logger.error("A fatal exception occurred", t)
+        System.exit(1)
+    }
+}
 
