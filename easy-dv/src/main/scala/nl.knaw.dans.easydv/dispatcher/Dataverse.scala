@@ -19,12 +19,10 @@ import nl.knaw.dans.easydv.Command.FeedBackMessage
 import nl.knaw.dans.easydv.CommandLineOptions
 import nl.knaw.dans.lib.dataverse.DataverseApi
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import org.apache.commons.io.IOUtils
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
 import java.io.PrintStream
-import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.util.{ Failure, Try }
 
 object Dataverse extends DebugEnhancedLogging {

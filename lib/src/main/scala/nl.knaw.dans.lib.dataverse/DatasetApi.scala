@@ -347,4 +347,13 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
     trace(())
     getUnversionedFromTarget[List[Lock]]("locks")
   }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-published-dataset]]
+   * @return
+   */
+  def destroy(): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    deleteAtTarget[DataMessage]("destroy")
+  }
 }

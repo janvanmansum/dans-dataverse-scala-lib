@@ -15,10 +15,10 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import java.net.URI
 import nl.knaw.dans.lib.dataverse.model.{ DatabaseSetting, Workflow }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
+import java.net.URI
 import scala.util.Try
 
 class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extends HttpSupport with DebugEnhancedLogging {
@@ -104,10 +104,18 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
     get[Workflow](s"workflows/$id")
   }
 
-//  def addWorkflow(workflow: Workflow): Try[DataverseResponse[Any]] = {
-//    trace(workflow)
-//    postJson[Workflow]()
-//  }
+  //  def addWorkflow(workflow: Workflow): Try[DataverseResponse[Any]] = {
+  //    trace(workflow)
+  //    postJson[Workflow]()
+  //  }
 
-
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @param triggerType PrePublishDataset or PostPublishDataset
+   * @return
+   */
+  def getDefaultWorkflow(triggerType: String): Try[DataverseResponse[Workflow]] = {
+    trace(triggerType)
+    get[Workflow](s"workflows/default/$triggerType")
+  }
 }
