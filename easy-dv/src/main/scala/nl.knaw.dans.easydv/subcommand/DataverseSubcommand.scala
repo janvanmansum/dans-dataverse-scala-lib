@@ -20,7 +20,7 @@ import org.rogach.scallop.{ ScallopOption, Subcommand }
 
 class DataverseSubcommand extends Subcommand("dataverse") {
   shortSubcommandsHelp(true)
-  descr("Operations on a dataverse or sub-dataverse")
+  descr("Operations on a dataverse or sub-dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#dataverses")
   val alias: ScallopOption[String] = trailArg("dataverse-alias",
     descr = "The dataverse alias")
 

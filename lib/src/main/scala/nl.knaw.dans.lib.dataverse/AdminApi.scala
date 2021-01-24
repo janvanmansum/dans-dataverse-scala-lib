@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import nl.knaw.dans.lib.dataverse.model.{ DatabaseSetting, Workflow }
+import nl.knaw.dans.lib.dataverse.model.{ DataMessage, DatabaseSetting, Workflow }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
 import java.net.URI
@@ -111,11 +111,50 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @return
+   */
+  def deleteWorkflow(id: Int): Try[DataverseResponse[DataMessage]] = {
+    trace(id)
+    deletePath[DataMessage](s"workflows/$id")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @return
+   */
+  def getDefaultWorkflows: Try[DataverseResponse[Map[String, Workflow]]] = {
+    trace(())
+    get[Map[String, Workflow]](s"workflows/default")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
    * @param triggerType PrePublishDataset or PostPublishDataset
    * @return
    */
   def getDefaultWorkflow(triggerType: String): Try[DataverseResponse[Workflow]] = {
     trace(triggerType)
     get[Workflow](s"workflows/default/$triggerType")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @param triggerType PrePublishDataset or PostPublishDataset
+   * @param workflowId  id of the workflow to make default
+   * @return
+   */
+  def setDefaultWorkflow(triggerType: String, workflowId: Int): Try[DataverseResponse[DataMessage]] = {
+    trace(triggerType)
+    put[DataMessage](s"workflows/default/$triggerType", body = workflowId.toString)
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @param triggerType PrePublishDataset or PostPublishDataset
+   * @return
+   */
+  def unsetDefaultWorkflow(triggerType: String): Try[DataverseResponse[DataMessage]] = {
+    trace(triggerType)
+    deletePath[DataMessage](s"workflows/default/$triggerType")
   }
 }

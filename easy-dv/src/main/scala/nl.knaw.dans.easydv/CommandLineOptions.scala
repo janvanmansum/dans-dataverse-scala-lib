@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.easydv
 
-import nl.knaw.dans.easydv.subcommand.DataverseSubcommand
+import nl.knaw.dans.easydv.subcommand.{ AdminSubcommand, DataverseSubcommand }
 import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand }
 
 import java.io.{ File => jFile }
@@ -25,7 +25,6 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
   editBuilder(_.setHelpWidth(110))
   printedName = "easy-dv"
   version(configuration.version)
-  private val SUBCOMMAND_FOOTER = "------------------\n\n"
   val description: String = s"""Easy-to-use command line client for the Dataverse API"""
   val synopsis: String =
     s"""
@@ -49,4 +48,6 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
 
   val dataverse = new DataverseSubcommand()
   addSubcommand(dataverse)
+  val admin = new AdminSubcommand()
+  addSubcommand(admin)
 }
