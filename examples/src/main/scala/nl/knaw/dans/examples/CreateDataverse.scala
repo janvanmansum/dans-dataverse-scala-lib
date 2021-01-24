@@ -15,31 +15,29 @@
  */
 package nl.knaw.dans.examples
 
-import nl.knaw.dans.lib.dataverse.model.BuiltinUser
+import nl.knaw.dans.lib.dataverse.model.{ Dataverse, DataverseContact }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
-object CreateBuiltinUser extends App with DebugEnhancedLogging with BaseApp {
+object CreateDataverse extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
-  private val fn = args(0)
-  private val ln = args(1)
-  private val un = args(2)
+  private val alias = args(0)
 
-
-  private val user = BuiltinUser(
-    firstName = fn,
-    lastName = ln,
-    userName = un,
-    affiliation = "Nowhereville University",
-    position = "Anonymity Officer",
-    email = s"$un@example.com")
+  private val dataverse = Dataverse(
+    name = "Test dataverse",
+    alias = alias,
+    description = Some("This is the description"),
+    dataverseContacts = List(DataverseContact(contactEmail = "test@example.com")),
+    dataverseType = "JOURNALS")
 
   private val result = for {
-    response <- server.builtinUser().create(user, "p4ssw3d")
+    response <- server.dataverse("root").create(dataverse)
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
+    dataverse <- response.data
+    _ = logger.info(s"Description of the dataverse: '${ dataverse.description.getOrElse("NO DESCRIPTION FOUND") }'")
   } yield ()
   logger.info(s"result = $result")
 }

@@ -18,24 +18,36 @@ package nl.knaw.dans.easydv.dispatcher
 import nl.knaw.dans.easydv.Command.FeedBackMessage
 import nl.knaw.dans.easydv.CommandLineOptions
 import nl.knaw.dans.lib.dataverse.DataverseApi
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import org.apache.commons.io.IOUtils
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
 import java.io.PrintStream
-import scala.util.{ Success, Try }
+import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.util.{ Failure, Try }
 
-object Dataverse {
+object Dataverse extends DebugEnhancedLogging {
   private implicit val jsonFormats: Formats = DefaultFormats
 
   def dispatch(commandLine: CommandLineOptions, dv: DataverseApi)(implicit resultOutput: PrintStream): Try[FeedBackMessage] = {
+    trace(())
     commandLine.subcommands match {
+      case commandLine.dataverse :: commandLine.dataverse.create :: Nil =>
+        for {
+          dvDef <- getStringFromStd
+          _ = debug(dvDef)
+          response <- dv.create(dvDef)
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "create dataverse"
       case commandLine.dataverse :: commandLine.dataverse.view :: Nil =>
         for {
           response <- dv.view()
           json <- response.json
-          _ = resultOutput.print(Serialization.writePretty(json))
+          _ = resultOutput.println(Serialization.writePretty(json))
         } yield "view dataverse"
-      case _ => Success("Blah")
+      case _ => Failure(new RuntimeException(s"Unkown command: $commandLine"))
     }
   }
 }

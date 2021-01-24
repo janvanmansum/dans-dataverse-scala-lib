@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2020 DANS - Data Archiving and Networked Services (info@dans.knaw.nl)
+ * Copyright (C) 2021 DANS - Data Archiving and Networked Services (info@dans.knaw.nl)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.lib.dataverse.model
+package nl.knaw.dans.easydv
 
-case class Workflow(id: Int, name: String, steps: List[WorkflowStep])
+import org.apache.commons.io.IOUtils
+
+import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.util.Try
+
+package object dispatcher {
+
+  def getStringFromStd: Try[String] = Try {
+    IOUtils.readLines(Console.in).asScala.mkString("\n")
+  }
+}

@@ -24,8 +24,13 @@ class DataverseSubcommand extends Subcommand("dataverse") {
   val alias: ScallopOption[String] = trailArg("dataverse-alias",
     descr = "The dataverse alias")
 
+  val create = new Subcommand("create") {
+    descr("Creates a dataverse based on the JSON definition on STDIN. See: https://guides.dataverse.org/en/latest/api/native-api.html#create-a-dataverse")
+  }
+  addSubcommand(create)
+
   val view = new Subcommand("view") {
-    descr("View metadata about a dataverse")
+    descr("View metadata about a dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#view-a-dataverse")
   }
   addSubcommand(view)
 

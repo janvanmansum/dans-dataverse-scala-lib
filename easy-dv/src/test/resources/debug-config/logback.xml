@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <appender name="FILE"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${user.home}/easy-dv.log</file>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%date{ISO8601}] %-5level %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>data/easy-dv.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${user.home}/easy-dv.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>data/easy-dv.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -13,6 +17,7 @@
     </appender>
     <root level="warn">
         <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
     </root>
-    <logger name="nl.knaw.dans" level="info"/>
+    <logger name="nl.knaw.dans" level="trace"/>
 </configuration>

@@ -37,17 +37,31 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
   protected val apiVersion: Option[String] = Option(configuration.apiVersion)
 
   /**
-   * Creates a dataverse base on a definition provided as model object.
+   * Creates a dataverse based on a definition provided as model object.
    *
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#create-a-dataverse]]
    * @param dd the model object
    * @return
    */
-  def create(dd: model.Dataverse): Try[DataverseResponse[model.Dataverse]] = {
+  def create(dd: Dataverse): Try[DataverseResponse[Dataverse]] = {
     trace(dd)
     for {
       jsonString <- serializeAsJson(dd, logger.underlying.isDebugEnabled)
-      response <- postJson[model.Dataverse](s"dataverses/$dvId", jsonString)
+      response <- create(jsonString)
+    } yield response
+  }
+
+  /**
+   * Creates a dataverse based on a definition provided as a string with the JSON definition.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#create-a-dataverse]]
+   * @param s the JSON definition
+   * @return
+   */
+  def create(s: String): Try[DataverseResponse[Dataverse]] = {
+    trace(s)
+    for {
+      response <- postJson[Dataverse](s"dataverses/$dvId", s)
     } yield response
   }
 
@@ -57,7 +71,7 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#view-a-dataverse]]
    * @return
    */
-  def view(): Try[DataverseResponse[model.Dataverse]] = {
+  def view(): Try[DataverseResponse[Dataverse]] = {
     trace(())
     get(s"dataverses/$dvId", Map.empty)
   }
