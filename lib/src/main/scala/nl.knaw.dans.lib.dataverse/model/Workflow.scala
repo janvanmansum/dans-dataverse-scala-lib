@@ -15,4 +15,4 @@
  */
 package nl.knaw.dans.lib.dataverse.model
 
-case class Workflow(id: Int, name: String, steps: List[WorkflowStep])
+case class Workflow(id: Option[Int] = None, name: String, steps: List[WorkflowStep] = List.empty)

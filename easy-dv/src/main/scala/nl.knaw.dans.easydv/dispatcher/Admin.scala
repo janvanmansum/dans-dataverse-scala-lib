@@ -44,7 +44,13 @@ object Admin extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "get-workflow"
-        // TODO: add-workflow
+      case commandLine.admin :: commandLine.admin.addWorkflow :: Nil =>
+        for {
+          s <- getStringFromStd
+          response <- admin.addWorkflow(s)
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "add-workflow"
       case commandLine.admin :: commandLine.admin.deleteWorkflow :: Nil =>
         for {
           response <- admin.deleteWorkflow(commandLine.admin.deleteWorkflow.id())

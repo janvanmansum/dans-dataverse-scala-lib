@@ -17,6 +17,7 @@ package nl.knaw.dans.lib.dataverse
 
 import nl.knaw.dans.lib.dataverse.model.{ DataMessage, DatabaseSetting, Workflow }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import org.json4s.native.Serialization
 
 import java.net.URI
 import scala.util.Try
@@ -104,10 +105,26 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
     get[Workflow](s"workflows/$id")
   }
 
-  //  def addWorkflow(workflow: Workflow): Try[DataverseResponse[Any]] = {
-  //    trace(workflow)
-  //    postJson[Workflow]()
-  //  }
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @return
+   */
+  def addWorkflow(workflow: Workflow): Try[DataverseResponse[Workflow]] = {
+    trace(workflow)
+    for {
+      json <- serializeAsJson(workflow, logger.underlying.isDebugEnabled)
+      response <- addWorkflow(json)
+    } yield response
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   * @return
+   */
+  def addWorkflow(json: String): Try[DataverseResponse[Workflow]] = {
+    trace(json)
+    postJson[Workflow]("workflows", body = json)
+  }
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
