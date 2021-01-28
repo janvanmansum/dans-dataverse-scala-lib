@@ -28,7 +28,7 @@
 
     <groupId>nl.knaw.dans</groupId>
     <artifactId>easy-dv</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
 
     <name>EASY Dataverse CLI</name>
     <description>Easy-to-use command line client for the Dataverse API</description>
@@ -151,8 +151,4 @@
             </build>
         </profile>
     </profiles>
-
-  <scm>
-    <tag>v1.2.0</tag>
-  </scm>
 </project>
