@@ -38,11 +38,15 @@ object Configuration {
       load((cfgPath / "application.properties").toJava)
     }
 
+    val apiTokenEnv = Option(System.getenv("DATAVERSE_API_TOKEN"))
+      .orElse(Option(System.getenv("DATAVERSE_API_KEY")))
+      .orElse(Option(System.getenv("API_TOKEN")))
+
     new Configuration(
       version = (home / "bin" / "version").contentAsString.stripLineEnd,
       dvConfig = DataverseInstanceConfig(
         baseUrl = new URI(properties.getString("dataverse.base-url")),
-        apiToken = properties.getString("dataverse.api-key"),
+        apiToken = apiTokenEnv.getOrElse(properties.getString("dataverse.api-key")),
         unblockKey = Option(properties.getString("dataverse.admin-api-unblock-key")),
         connectionTimeout = properties.getInt("dataverse.connection-timeout-ms"),
         readTimeout = properties.getInt("dataverse.read-timeout-ms"),

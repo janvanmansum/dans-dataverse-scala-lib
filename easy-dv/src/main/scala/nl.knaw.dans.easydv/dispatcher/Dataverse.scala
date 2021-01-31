@@ -45,7 +45,7 @@ object Dataverse extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "view dataverse"
-      case _ => Failure(new RuntimeException(s"Unkown command: $commandLine"))
+      case _ => Failure(new RuntimeException(s"Unkown dataverse sub-command: ${commandLine.dataverse.subcommand}"))
     }
   }
 }

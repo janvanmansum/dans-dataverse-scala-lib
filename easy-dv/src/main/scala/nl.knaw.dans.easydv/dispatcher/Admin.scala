@@ -64,7 +64,7 @@ object Admin extends DebugEnhancedLogging {
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "get-all-default-workflows"
 
-      case _ => Failure(new RuntimeException(s"Unkown command: $commandLine"))
+      case _ => Failure(new RuntimeException(s"Unknown admin command: ${commandLine.admin.subcommand}"))
     }
   }
 }

@@ -65,9 +65,8 @@ class AdminSubcommand extends Subcommand("admin") {
   val unsetDefaultWorkflow = new Subcommand("unset-default-workflow") {
     descr("Unsets the default workflow for the specified trigger type")
     val triggerType: ScallopOption[String] = opt(name = "trigger-type", descr = "the trigger type", required = true)
-
   }
   addSubcommand(unsetDefaultWorkflow)
 
-  // TODO: whitelist commands
+  // TODO: the 'whitelist' commands
 }
