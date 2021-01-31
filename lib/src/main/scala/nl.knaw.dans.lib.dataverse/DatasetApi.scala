@@ -42,7 +42,6 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   protected val apiToken: String = configuration.apiToken
   protected val sendApiTokenViaBasicAuth = false
   protected val unblockKey: Option[String] = Option.empty
-  protected val builtinUserKey: Option[String] = Option.empty
   protected val apiPrefix: String = "api"
   protected val apiVersion: Option[String] = Option(configuration.apiVersion)
   protected val awaitUnlockMaxNumberOfRetries: Int = configuration.awaitUnlockMaxNumberOfRetries

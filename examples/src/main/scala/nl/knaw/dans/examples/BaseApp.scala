@@ -23,13 +23,13 @@ import org.apache.commons.configuration.PropertiesConfiguration
 
 trait BaseApp extends DebugEnhancedLogging{
   logger.info(s"Starting ${getClass.getName}")
-  protected val props = new PropertiesConfiguration("examples/dataverse.properties")
+  private val props = new PropertiesConfiguration("examples/dataverse.properties")
+
   val server = new DataverseInstance(
     DataverseInstanceConfig(
       baseUrl = new URI(props.getString("baseUrl")),
       apiToken = props.getString("apiKey"),
-      unblockKey = Option(props.getString("unblockKey")),
-      builtinUserKey = Option(props.getString("builtinUserKey")),
+      unblockKey = Option(props.getString("unblockKey"))
     )
   )
 

@@ -35,7 +35,6 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
   protected val apiToken: String = configuration.apiToken
   protected val sendApiTokenViaBasicAuth = false
   protected val unblockKey: Option[String] = Option.empty
-  protected val builtinUserKey: Option[String] = Option.empty
   protected val apiPrefix: String = "api"
   protected val apiVersion: Option[String] = Option(configuration.apiVersion)
 

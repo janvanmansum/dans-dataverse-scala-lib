@@ -38,7 +38,6 @@ class BuiltinUserApi private[dataverse](configuration: DataverseInstanceConfig) 
   protected val apiToken: String = configuration.apiToken
   protected val sendApiTokenViaBasicAuth = false
   protected val unblockKey: Option[String] = Option.empty
-  protected val builtinUserKey: Option[String] = configuration.builtinUserKey
   protected val apiPrefix: String = "api"
   protected val apiVersion: Option[String] = Option(configuration.apiVersion)
 
@@ -46,10 +45,11 @@ class BuiltinUserApi private[dataverse](configuration: DataverseInstanceConfig) 
    * @see [[https://guides.dataverse.org/en/5.2/api/native-api.html#create-a-builtin-user]]
    * @param user the user account info
    * @param password the password to set for the new user
+   * @param builtInUsersKey the key that allows you to create built-in users via the API
    * @return
    */
-  def create(user: model.BuiltinUser, password: String): Try[DataverseResponse[Any]] = {
-    postJson[Any]("builtin-users", Serialization.write(user), Map.empty, Map("password" -> password, "key" -> builtinUserKey.getOrElse("")))
+  def create(user: model.BuiltinUser, password: String, builtInUsersKey: String): Try[DataverseResponse[Any]] = {
+    postJson[Any]("builtin-users", Serialization.write(user), Map.empty, Map("password" -> password, "key" -> builtInUsersKey))
   }
 
 

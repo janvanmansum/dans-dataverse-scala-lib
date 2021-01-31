@@ -50,7 +50,6 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
   // If false, it is sent through the X-Dataverse-key header
   protected val sendApiTokenViaBasicAuth: Boolean
   protected val unblockKey: Option[String]
-  protected val builtinUserKey: Option[String]
   protected val apiPrefix: String
   protected val apiVersion: Option[String]
 

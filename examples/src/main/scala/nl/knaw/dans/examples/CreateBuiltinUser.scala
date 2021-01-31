@@ -25,7 +25,7 @@ object CreateBuiltinUser extends App with DebugEnhancedLogging with BaseApp {
   private val fn = args(0)
   private val ln = args(1)
   private val un = args(2)
-
+  private val builtinUserKey = args(3)
 
   private val user = BuiltinUser(
     firstName = fn,
@@ -36,10 +36,16 @@ object CreateBuiltinUser extends App with DebugEnhancedLogging with BaseApp {
     email = s"$un@example.com")
 
   private val result = for {
-    response <- server.builtinUser().create(user, "p4ssw3d")
+    response <- server.admin().putDatabaseSetting("BuiltinUsers.KEY", builtinUserKey)
+    s <- response.string
+    _ = logger.info(s"Set builtinUserKey: ${s}")
+    response <- server.builtinUser().create(user, "p4ssw3d", builtinUserKey)
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
+    response <- server.admin().deleteDatabaseSetting("BuiltinUsers.KEY")
+    s <- response.string
+    _ = logger.info(s"Removed builtinUserKey: ${s}")
   } yield ()
   logger.info(s"result = $result")
 }

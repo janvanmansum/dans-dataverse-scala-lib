@@ -17,7 +17,6 @@ package nl.knaw.dans.lib.dataverse
 
 import nl.knaw.dans.lib.dataverse.model.{ DataMessage, DatabaseSetting, Workflow }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import org.json4s.native.Serialization
 
 import java.net.URI
 import scala.util.Try
@@ -29,7 +28,6 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
   protected val apiToken: String = configuration.apiToken
   protected val sendApiTokenViaBasicAuth = false
   protected val unblockKey: Option[String] = configuration.unblockKey
-  protected val builtinUserKey: Option[String] = Option.empty
   protected val apiPrefix: String = "api/admin"
   protected val apiVersion: Option[String] = Option.empty // No version allowed here
 
