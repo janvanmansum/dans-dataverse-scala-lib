@@ -72,7 +72,7 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
    */
   def deleteDatabaseSetting(settingName: String): Try[DataverseResponse[Nothing]] = {
     trace(settingName)
-    deletePath[Nothing](s"setting/${ settingName }")
+    deletePath[Nothing](s"settings/${ settingName }")
   }
 
   /**
