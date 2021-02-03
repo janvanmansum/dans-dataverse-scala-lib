@@ -119,7 +119,22 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
     trace(role)
     for {
       jsonString <- serializeAsJson(role, logger.underlying.isDebugEnabled)
-      response <- postJson[Role](s"dataverses/$dvId/roles", jsonString)
+      response <- createRole(jsonString)
+    } yield response
+  }
+
+
+  /**
+   * Creates a role base on a definition provided as model object.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#create-a-new-role-in-a-dataverse]]
+   * @param s the JSON definition
+   * @return
+   */
+  def createRole(s: String): Try[DataverseResponse[Role]] = {
+    trace(s)
+    for {
+      response <- postJson[Role](s"dataverses/$dvId/roles", s)
     } yield response
   }
 
