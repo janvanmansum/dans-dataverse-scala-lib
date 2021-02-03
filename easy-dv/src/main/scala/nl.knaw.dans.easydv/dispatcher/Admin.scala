@@ -63,8 +63,25 @@ object Admin extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "get-all-default-workflows"
-
-      case _ => Failure(new RuntimeException(s"Unknown admin command: ${commandLine.admin.subcommand}"))
+      case commandLine.admin :: commandLine.admin.getDefaultWorkflow :: Nil =>
+        for {
+          response <- admin.getDefaultWorkflow(commandLine.admin.getDefaultWorkflow.triggerType())
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "get-default-workflow"
+      case commandLine.admin :: commandLine.admin.setDefaultWorkflow :: Nil =>
+        for {
+          response <- admin.setDefaultWorkflow(commandLine.admin.setDefaultWorkflow.triggerType(), commandLine.admin.setDefaultWorkflow.id())
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "set-default-workflow"
+      case commandLine.admin :: commandLine.admin.unsetDefaultWorkflow :: Nil =>
+        for {
+          response <- admin.unsetDefaultWorkflow(commandLine.admin.unsetDefaultWorkflow.triggerType())
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "unset-default-workflow"
+      case _ => Failure(new RuntimeException(s"Unknown admin command: ${commandLine.args.tail.mkString(" ")}"))
     }
   }
 }

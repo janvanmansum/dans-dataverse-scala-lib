@@ -32,6 +32,9 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
        |  $printedName dataset <id> <sub-command>
        |  $printedName file <id> <sub-command>
        |  $printedName admin <sub-command>
+       |  $printedName sword <sub-command>
+       |  $printedName create-builtin-user
+       |  $printedName resume-workflow
      """.stripMargin
 
   version(s"$printedName v${ configuration.version }")

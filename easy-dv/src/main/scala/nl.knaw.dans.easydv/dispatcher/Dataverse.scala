@@ -45,7 +45,36 @@ object Dataverse extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "view dataverse"
-      case _ => Failure(new RuntimeException(s"Unkown dataverse sub-command: ${commandLine.dataverse.subcommand}"))
+      case commandLine.dataverse :: commandLine.dataverse.delete :: Nil =>
+        for {
+          response <- dv.delete()
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "delete dataverse"
+      case commandLine.dataverse :: commandLine.dataverse.contents :: Nil =>
+        for {
+          response <- dv.contents()
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "view contents"
+      case commandLine.dataverse :: commandLine.dataverse.listRoles :: Nil =>
+        for {
+          response <- dv.listRoles()
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "list roles"
+      case commandLine.dataverse :: commandLine.dataverse.createRole :: Nil =>
+        for {
+          dvDef <- getStringFromStd
+          _ = debug(dvDef)
+          response <- dv.createRole(dvDef)
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "create role"
+
+
+
+      case _ => Failure(new RuntimeException(s"Unkown dataverse sub-command: ${commandLine.args.tail.mkString(" ")}"))
     }
   }
 }

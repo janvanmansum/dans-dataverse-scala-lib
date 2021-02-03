@@ -24,15 +24,44 @@ class DataverseSubcommand extends Subcommand("dataverse") {
   val alias: ScallopOption[String] = trailArg("dataverse-alias",
     descr = "The dataverse alias")
 
-  val create = new Subcommand("create") {
-    descr("Creates a dataverse based on the JSON definition on STDIN. See: https://guides.dataverse.org/en/latest/api/native-api.html#create-a-dataverse")
+  private def addSimpleCommand(name: String, description: String): Subcommand = {
+    val sc = new Subcommand(name) {
+      descr(description)
+    }
+    addSubcommand(sc)
+    sc
   }
-  addSubcommand(create)
 
-  val view = new Subcommand("view") {
-    descr("View metadata about a dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#view-a-dataverse")
-  }
-  addSubcommand(view)
+  val create = addSimpleCommand(
+    name = "create",
+    description = "Creates a dataverse based on the JSON definition on STDIN. See: https://guides.dataverse.org/en/latest/api/native-api.html#create-a-dataverse")
+  val view = addSimpleCommand(
+    name = "view",
+    description = "Displays metadata about a dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#view-a-dataverse")
+  val delete = addSimpleCommand(
+    name = "delete",
+    description = "Deletes a dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#delete-a-dataverse")
+  val contents = addSimpleCommand(
+    name = "contents",
+    description = "Displays dataverse contents. See: https://guides.dataverse.org/en/latest/api/native-api.html#show-contents-of-a-dataverse")
+  val listRoles = addSimpleCommand(
+    name = "list-roles",
+    description = "Lists roles defined in dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-roles-defined-in-a-dataverse")
+  val createRole = addSimpleCommand(
+    name = "create-role",
+    description = "Creates a role based on the JSON definition on STDIN. See: https://guides.dataverse.org/en/latest/api/native-api.html#create-a-new-role-in-a-dataverse")
+
+  // TODO: impl
+  val storageSize = addSimpleCommand(
+    name = "storage-size",
+    description = "Displays the storages size in bytes for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataverse")
+  val listFacets = addSimpleCommand(
+    name = "list-facets",
+    description = "Lists facets for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse")
+  val setFacets = addSimpleCommand(
+    name = "list-facets",
+    description = "Lists facets for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse")
+
 
   footer(subCommandFooter)
 }
