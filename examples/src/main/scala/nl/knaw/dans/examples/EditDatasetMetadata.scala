@@ -24,13 +24,14 @@ object EditDatasetMetadata extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
   private val persistentId = args(0)
   private val title = args(1)
+  private val optLockOverride = if (args.length > 2) Option(args(2)) else None
 
   private val fieldList: FieldList = FieldList(
     List(PrimitiveSingleValueField("title", s"$title"))
   )
 
   val result = for {
-    response <- server.dataset(persistentId).editMetadata(fieldList)
+    response <- server.dataset(persistentId, optLockOverride).editMetadata(fieldList)
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
