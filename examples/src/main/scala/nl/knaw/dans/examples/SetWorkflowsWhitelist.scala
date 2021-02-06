@@ -15,29 +15,20 @@
  */
 package nl.knaw.dans.examples
 
-import nl.knaw.dans.examples.GetMetadataBlock.logger
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
-object GetLocks extends App with DebugEnhancedLogging with BaseApp {
+object SetWorkflowsWhitelist extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
-  private val persistentId = args(0)
 
-  /*
-   * Start the example and then do something with the dataset that causes a lock, such as ingesting a
-   * tabular file.
-   */
-  for (_ <- Range(1, 300)) {
-    for {
-      response <- server.dataset(persistentId).getLocks
-      _ = debug(s"Raw response: ${ response.string }")
-      locks <- response.data
-      _ = if (locks.nonEmpty)
-            logger.info(s"Dataset is currently locked by: ${
-              if (locks.isEmpty) "NOTHING"
-              else locks.map(_.lockType).mkString(", ")
-            } ")
-    } yield ()
-    Thread.sleep(50)
-  }
+  val result = for {
+    response <- server.admin().setWorkflowsWhitelist(args.toList)
+    _ = logger.info(s"Raw response: ${ response.string }")
+    _ = logger.info(s"JSON AST: ${ response.json }")
+    _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
+//    data <- response.data
+//    _ = logger.info(s"Dataverse said: ${data.message}")
+  } yield ()
+  logger.info(s"result = $result")
 }
