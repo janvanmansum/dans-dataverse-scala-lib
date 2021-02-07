@@ -34,6 +34,7 @@ import scala.util.{ Failure, Success, Try }
  */
 class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Boolean, configuration: DataverseInstanceConfig, workflowId: Option[String] = None) extends TargetedHttpSupport with DebugEnhancedLogging {
   private implicit val jsonFormats: Formats = DefaultFormats
+  private val HEADER_DATAVERSE_INVOCATION_ID = "X-Dataverse-invocationID"
 
   protected val connectionTimeout: Int = configuration.connectionTimeout
   protected val readTimeout: Int = configuration.readTimeout
@@ -49,7 +50,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   protected val targetBase: String = "datasets"
   protected val id: String = datasetId
   protected val isPersistentId: Boolean = isPersistentDatasetId
-  override protected val extraHeaders: Map[String, String] = workflowId.map(wfid => Map("X-Dataverse-invocationID" -> wfid)).getOrElse(Map.empty)
+  override protected val extraHeaders: Map[String, String] = workflowId.map(wfid => Map(HEADER_DATAVERSE_INVOCATION_ID -> wfid)).getOrElse(Map.empty)
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#get-json-representation-of-a-dataset]]
