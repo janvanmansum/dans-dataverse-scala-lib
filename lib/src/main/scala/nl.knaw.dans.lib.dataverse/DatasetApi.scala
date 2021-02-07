@@ -15,9 +15,6 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import java.lang.Thread.sleep
-import java.net.URI
-
 import better.files.File
 import nl.knaw.dans.lib.dataverse.model._
 import nl.knaw.dans.lib.dataverse.model.dataset.UpdateType.UpdateType
@@ -27,7 +24,9 @@ import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
-import scala.util.{ Failure, Try }
+import java.lang.Thread.sleep
+import java.net.URI
+import scala.util.{ Failure, Success, Try }
 
 /**
  * Functions that operate on a single dataset. See [[https://guides.dataverse.org/en/latest/api/native-api.html#datasets]].
@@ -44,8 +43,8 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   protected val unblockKey: Option[String] = Option.empty
   protected val apiPrefix: String = "api"
   protected val apiVersion: Option[String] = Option(configuration.apiVersion)
-  protected val awaitUnlockMaxNumberOfRetries: Int = configuration.awaitUnlockMaxNumberOfRetries
-  protected val awaitUnlockMillisecondsBetweenRetries: Int = configuration.awaitUnlockMillisecondsBetweenRetries
+  protected val awaitLockStateMaxNumberOfRetries: Int = configuration.awaitLockStateMaxNumberOfRetries
+  protected val awaitLockStateMillisecondsBetweenRetries: Int = configuration.awaitLockStateMillisecondsBetweenRetries
 
   protected val targetBase: String = "datasets"
   protected val id: String = datasetId
@@ -298,45 +297,13 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    * to check if the locks have been cleared. Note that in scenarios where concurrent processes might access the same dataset
    * it is not guaranteed that the locks, once cleared, stay that way.
    *
-   * @param maxNumberOfRetries     the maximum number the check for unlock is made, defaults to [[awaitUnlockMaxNumberOfRetries]]
-   * @param waitTimeInMilliseconds the time between tries, defaults to [[awaitUnlockMillisecondsBetweenRetries]]
+   * @param maxNumberOfRetries     the maximum number the check for unlock is made, defaults to [[awaitLockStateMaxNumberOfRetries]]
+   * @param waitTimeInMilliseconds the time between tries, defaults to [[awaitLockStateMillisecondsBetweenRetries]]
    * @return
-   * @throws LockException if after the maximum number of retries the dataset is still locked
    */
-  def awaitUnlock(maxNumberOfRetries: Int = awaitUnlockMaxNumberOfRetries, waitTimeInMilliseconds: Int = awaitUnlockMillisecondsBetweenRetries): Try[Unit] = {
+  def awaitUnlock(maxNumberOfRetries: Int = awaitLockStateMaxNumberOfRetries, waitTimeInMilliseconds: Int = awaitLockStateMillisecondsBetweenRetries): Try[Unit] = {
     trace(maxNumberOfRetries, waitTimeInMilliseconds)
-
-    def getCurrentLocks: Try[List[Lock]] = {
-      for {
-        response <- getLocks
-        locks <- response.data
-        _ = debug(s"Current locks: ${ locks.mkString(", ") }")
-      } yield locks
-    }
-
-    // Note: also returns false if a Failure occurred, i.e. the lock could not be confirmed. It seems reasonable that if an exception
-    // occurred that we stop trying and report the error.
-    def isLockConfirmed(maybeLocks: Try[List[Lock]]): Boolean = {
-      maybeLocks.map(_.nonEmpty).getOrElse(false)
-    }
-
-    def slept(): Boolean = {
-      debug(s"Sleeping $waitTimeInMilliseconds ms before next try..")
-      sleep(waitTimeInMilliseconds)
-      true
-    }
-
-    var numberOfTimesTried = 0
-    var maybeLocks = getCurrentLocks
-    do {
-      maybeLocks = getCurrentLocks
-      numberOfTimesTried += 1
-    } while (isLockConfirmed(maybeLocks) && numberOfTimesTried != maxNumberOfRetries && slept())
-
-    for {
-      locks <- maybeLocks
-      _ = if (locks.nonEmpty) throw LockException(numberOfTimesTried, waitTimeInMilliseconds, locks)
-    } yield ()
+    awaitLockState(_.isEmpty, "Wait for unlock expired")
   }
 
   /**
@@ -345,14 +312,29 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    * to check if the locks has been set. A use case is when an http/sr workflow wants to make sure that a dataset has been
    * locked on its behalf, so that it can be sure to have exclusive access via its invocation ID.
    *
-   * @param lockType the lock type to wait for
-   * @param maxNumberOfRetries the maximum number the check for unlock is made, defaults to [[awaitUnlockMaxNumberOfRetries]]
-   * @param waitTimeInMilliseconds the time between tries, defaults to [[awaitUnlockMillisecondsBetweenRetries]]
-   * @throws LockException if after the maximum number of retries the lock type is still not encountered
+   * @param lockType               the lock type to wait for
+   * @param maxNumberOfRetries     the maximum number the check for unlock is made, defaults to [[awaitLockStateMaxNumberOfRetries]]
+   * @param waitTimeInMilliseconds the time between tries, defaults to [[awaitLockStateMillisecondsBetweenRetries]]
    * @return
    */
-  def awaitLock(lockType: String, maxNumberOfRetries: Int = awaitUnlockMaxNumberOfRetries, waitTimeInMilliseconds: Int = awaitUnlockMillisecondsBetweenRetries): Try[Unit] = {
+  def awaitLock(lockType: String, maxNumberOfRetries: Int = awaitLockStateMaxNumberOfRetries, waitTimeInMilliseconds: Int = awaitLockStateMillisecondsBetweenRetries): Try[Unit] = {
     trace(maxNumberOfRetries, waitTimeInMilliseconds)
+    awaitLockState(_.exists(_.lockType == lockType), s"Wait for lock fo type $lockType expired")
+  }
+
+  /**
+   * Helper function that waits until the specified lockState function returns `true`, or throws a LockException if this never occurs
+   * within `maxNumberOrRetries` with `waitTimeInMilliseconds` pauses.
+   *
+   * @param lockState              the function that returns whether the required state has been reached
+   * @param errorMessage           error to report in LockException if it occurs
+   * @param maxNumberOfRetries     the maximum number of tries
+   * @param waitTimeInMilliseconds the time to wait between tries
+   * @return
+   */
+  private def awaitLockState(lockState: List[Lock] => Boolean, errorMessage: String, maxNumberOfRetries: Int = awaitLockStateMaxNumberOfRetries, waitTimeInMilliseconds: Int = awaitLockStateMillisecondsBetweenRetries): Try[Unit] = {
+    trace(maxNumberOfRetries, waitTimeInMilliseconds)
+    var numberOfTimesTried = 0
 
     def getCurrentLocks: Try[List[Lock]] = {
       for {
@@ -362,33 +344,22 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
       } yield locks
     }
 
-    // Note: also returns false if a Failure occurred, i.e. the lock could not be confirmed. It seems reasonable that if an exception
-    // occurred that we stop trying and report the error.
-    def isLockConfirmed(maybeLocks: Try[List[Lock]]): Boolean = {
-      maybeLocks.map(_.exists(_.lockType == lockType)).getOrElse(false)
-    }
-
     def slept(): Boolean = {
       debug(s"Sleeping $waitTimeInMilliseconds ms before next try..")
       sleep(waitTimeInMilliseconds)
       true
     }
 
-    var numberOfTimesTried = 0
     var maybeLocks = getCurrentLocks
     do {
       maybeLocks = getCurrentLocks
       numberOfTimesTried += 1
-    } while (isLockConfirmed(maybeLocks) && numberOfTimesTried != maxNumberOfRetries && slept())
+    } while (maybeLocks.isSuccess && !lockState(maybeLocks.get) && numberOfTimesTried != maxNumberOfRetries && slept())
 
-    for {
-      locks <- maybeLocks
-      _ = if (locks.nonEmpty) throw LockException(numberOfTimesTried, waitTimeInMilliseconds, locks)
-    } yield ()
-
-    ???
+    if (maybeLocks.isFailure) maybeLocks.map(_ => ())
+    else if (!lockState(maybeLocks.get)) Failure(LockException(numberOfTimesTried, waitTimeInMilliseconds, errorMessage))
+    else Success(())
   }
-
 
 
   /**

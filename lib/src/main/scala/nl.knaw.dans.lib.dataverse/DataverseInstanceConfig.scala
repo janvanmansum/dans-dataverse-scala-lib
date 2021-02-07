@@ -23,6 +23,6 @@ case class DataverseInstanceConfig(baseUrl: URI,
                                    connectionTimeout: Int = 5000,
                                    readTimeout: Int = 300000,
                                    apiVersion: String = "1",
-                                   awaitUnlockMaxNumberOfRetries: Int = 10,
-                                   awaitUnlockMillisecondsBetweenRetries: Int = 500
+                                   awaitLockStateMaxNumberOfRetries: Int = 10,
+                                   awaitLockStateMillisecondsBetweenRetries: Int = 500
                                   )

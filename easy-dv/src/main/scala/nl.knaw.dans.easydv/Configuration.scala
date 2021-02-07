@@ -51,8 +51,8 @@ object Configuration {
         connectionTimeout = properties.getInt("dataverse.connection-timeout-ms"),
         readTimeout = properties.getInt("dataverse.read-timeout-ms"),
         apiVersion = properties.getString("dataverse.api-version"),
-        awaitUnlockMaxNumberOfRetries = properties.getInt("dataverse.await-unlock.max-retries"),
-        awaitUnlockMillisecondsBetweenRetries = properties.getInt("dataverse.await-unlock.wait-time-ms")
+        awaitLockStateMaxNumberOfRetries = properties.getInt("dataverse.await-unlock.max-retries"),
+        awaitLockStateMillisecondsBetweenRetries = properties.getInt("dataverse.await-unlock.wait-time-ms")
       )
     )
   }
