@@ -18,4 +18,4 @@ package nl.knaw.dans.lib.dataverse.model
 case class Lock(lockType: String,
                 date: String,
                 user: String,
-                message: String)
+                message: Option[String] = None)

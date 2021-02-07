@@ -29,6 +29,7 @@ private[dataverse] trait TargetedHttpSupport extends HttpSupport {
   protected val targetBase: String
   protected val id: String
   protected val isPersistentId: Boolean
+  protected val extraHeaders: Map[String, String] = Map.empty
 
   /**
    * Get a specific version of something.
@@ -42,9 +43,11 @@ private[dataverse] trait TargetedHttpSupport extends HttpSupport {
     trace(endPoint, version)
     if (isPersistentId) super.get[D](
       subPath = s"${ targetBase }/:persistentId/versions/${ version }/${ endPoint }",
-      params = Map("persistentId" -> id))
+      params = Map("persistentId" -> id),
+      headers = extraHeaders)
     else super.get[D](
-      subPath = s"${ targetBase }/$id/versions/${ version }/${ endPoint }")
+      subPath = s"${ targetBase }/$id/versions/${ version }/${ endPoint }",
+      headers = extraHeaders)
   }
 
   /**
@@ -58,20 +61,24 @@ private[dataverse] trait TargetedHttpSupport extends HttpSupport {
     trace(endPoint)
     if (isPersistentId) super.get[D](
       subPath = s"${ targetBase }/:persistentId/${ endPoint }",
-      params = Map("persistentId" -> id))
+      params = Map("persistentId" -> id),
+      headers = extraHeaders)
     else super.get[D](
-      subPath = s"${ targetBase }/$id/${ endPoint }")
+      subPath = s"${ targetBase }/$id/${ endPoint }",
+      headers = extraHeaders)
   }
 
   protected def postJsonToTarget[D: Manifest](endPoint: String, body: String, queryParams: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
     if (isPersistentId) super.postJson[D](
       subPath = s"${ targetBase }/:persistentId/${ endPoint }",
       body,
-      params = Map("persistentId" -> id) ++ queryParams)
+      params = Map("persistentId" -> id) ++ queryParams,
+      headers = extraHeaders)
     else super.postJson[D](
       subPath = s"${ targetBase }/$id/${ endPoint }",
       body,
-      params = queryParams)
+      params = queryParams,
+      headers = extraHeaders)
   }
 
   protected def postFileToTarget[D: Manifest](endPoint: String, optFile: Option[File], optMetadata: Option[String], queryParams: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
@@ -79,30 +86,36 @@ private[dataverse] trait TargetedHttpSupport extends HttpSupport {
       subPath = s"${ targetBase }/:persistentId/${ endPoint }",
       optFile,
       optMetadata,
-      params = Map("persistentId" -> id) ++ queryParams)
+      params = Map("persistentId" -> id) ++ queryParams,
+      headers = extraHeaders)
     else super.postFile[D](
       subPath = s"${ targetBase }/$id/${ endPoint }",
       optFile,
       optMetadata,
-      params = queryParams)
+      params = queryParams,
+      headers = extraHeaders)
   }
 
   protected def putToTarget[D: Manifest](endPoint: String, body: String, queryParams: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
     if (isPersistentId) super.put[D](
       subPath = s"${ targetBase }/:persistentId/${ endPoint }",
       body,
-      params = Map("persistentId" -> id) ++ queryParams)
+      params = Map("persistentId" -> id) ++ queryParams,
+      headers = extraHeaders)
     else super.put[D](
       subPath = s"${ targetBase }/$id/${ endPoint }",
       body,
-      params = queryParams)
+      params = queryParams,
+      headers = extraHeaders)
   }
 
   protected def deleteAtTarget[D: Manifest](endPoint: String): Try[DataverseResponse[D]] = {
     if (isPersistentId) super.deletePath[D](
       subPath = s"${ targetBase }/:persistentId/${ endPoint }",
-      params = Map("persistentId" -> id))
+      params = Map("persistentId" -> id),
+      headers = extraHeaders)
     else super.put[D](
-      subPath = s"${ targetBase }/$id/${ endPoint }")
+      subPath = s"${ targetBase }/$id/${ endPoint }",
+      headers = extraHeaders)
   }
 }

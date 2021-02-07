@@ -33,8 +33,8 @@ class DataverseInstance(config: DataverseInstanceConfig) extends DebugEnhancedLo
     new DataverseApi(dvId: String, config)
   }
 
-  def dataset(pid: String): DatasetApi = {
-    new DatasetApi(pid, isPersistentDatasetId = true, config)
+  def dataset(pid: String, workflowId: Option[String] = None): DatasetApi = {
+    new DatasetApi(pid, isPersistentDatasetId = true, config, workflowId)
   }
 
   def dataset(id: Int): DatasetApi = {

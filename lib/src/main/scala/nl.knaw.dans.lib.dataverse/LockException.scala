@@ -22,7 +22,7 @@ import nl.knaw.dans.lib.dataverse.model.Lock
  *
  * @param numberOfTimesTried how many times the unlock check was tried
  * @param waitTimeInMilliseconds time waited between tries
- * @param locks list of locks found in last try
+ * @param msg message
  */
-case class LockException(numberOfTimesTried: Int, waitTimeInMilliseconds: Int, locks: List[Lock]) extends RuntimeException(s"Still locked after $numberOfTimesTried times with $waitTimeInMilliseconds millisecond pauses. Locks: ${ locks.mkString(", ") }")
+case class LockException(numberOfTimesTried: Int, waitTimeInMilliseconds: Int, msg: String) extends RuntimeException(s"$msg. Number of tries = $numberOfTimesTried, wait time between tries = $waitTimeInMilliseconds ms.")
 

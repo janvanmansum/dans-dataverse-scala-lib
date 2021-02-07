@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.lib.dataverse
+package nl.knaw.dans.examples
 
-import java.net.URI
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import org.json4s.{ DefaultFormats, Formats }
 
-case class DataverseInstanceConfig(baseUrl: URI,
-                                   apiToken: String,
-                                   unblockKey: Option[String] = None,
-                                   connectionTimeout: Int = 5000,
-                                   readTimeout: Int = 300000,
-                                   apiVersion: String = "1",
-                                   awaitLockStateMaxNumberOfRetries: Int = 10,
-                                   awaitLockStateMillisecondsBetweenRetries: Int = 500
-                                  )
+object ResumeDataset extends App with DebugEnhancedLogging with BaseApp {
+  private implicit val jsonFormats: Formats = DefaultFormats
+  private val invocationId = args(0)
+  private val fail = args.length > 2 && args(1) == "fail"
+
+  val result = for {
+    response <- server.workflows().resume(invocationId, fail)
+    _ = logger.info(s"Raw response message: ${ response.string }")
+  } yield ()
+  logger.info(s"result = $result")
+}

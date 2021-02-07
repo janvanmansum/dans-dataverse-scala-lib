@@ -172,4 +172,20 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
     trace(triggerType)
     deletePath[DataMessage](s"workflows/default/$triggerType")
   }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   */
+  def setWorkflowsWhitelist(whilelist: String): Try[DataverseResponse[Any]] = {
+    trace(whilelist)
+    put[Any]("workflows/ip-whitelist", whilelist)
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
+   */
+  def setWorkflowsWhitelist(ips: List[String]): Try[DataverseResponse[Any]] = {
+    trace(ips)
+    setWorkflowsWhitelist(ips.mkString(";"))
+  }
 }
