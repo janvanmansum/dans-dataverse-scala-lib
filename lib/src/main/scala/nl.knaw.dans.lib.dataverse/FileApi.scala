@@ -15,8 +15,6 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import java.net.URI
-
 import better.files.File
 import nl.knaw.dans.lib.dataverse.model.DataMessage
 import nl.knaw.dans.lib.dataverse.model.dataset.FileList
@@ -25,6 +23,7 @@ import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
+import java.net.URI
 import scala.util.Try
 import scala.xml.Elem
 
@@ -113,9 +112,21 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
    * @param fm file metadata
    * @return
    */
+  def updateMetadata(fm: String): Try[DataverseResponse[Nothing]] = {
+    trace(fm)
+    postFileToTarget[Nothing]("metadata", optFile = None, optMetadata = Option(fm))
+  }
+
+  /**
+   * Unfortunately, the body of the response is not valid JSON, hence the `Nothing` payload type.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#updating-file-metadata]]
+   * @param fm file metadata
+   * @return
+   */
   def updateMetadata(fm: FileMeta): Try[DataverseResponse[Nothing]] = {
     trace(fm)
-    postFileToTarget[Nothing]("metadata", optFile = None, optMetadata = Option(Serialization.write(fm)))
+    updateMetadata(Serialization.write(fm))
   }
 
   // TODO: describe requirements for provided xml

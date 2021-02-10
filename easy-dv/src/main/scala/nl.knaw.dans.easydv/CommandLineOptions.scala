@@ -15,10 +15,8 @@
  */
 package nl.knaw.dans.easydv
 
-import nl.knaw.dans.easydv.subcommand.{ AdminSubcommand, DataverseSubcommand }
-import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand }
-
-import java.io.{ File => jFile }
+import nl.knaw.dans.easydv.subcommand._
+import org.rogach.scallop.ScallopConf
 
 class CommandLineOptions(args: Array[String], configuration: Configuration) extends ScallopConf(args) {
   appendDefaultToDescription = true
@@ -51,6 +49,15 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
 
   val dataverse = new DataverseSubcommand()
   addSubcommand(dataverse)
+  val dataset = new DatasetSubcommand()
+  addSubcommand(dataset)
+  val file = new FileSubcommand()
+  addSubcommand(file)
   val admin = new AdminSubcommand()
   addSubcommand(admin)
+  val sword = new SwordSubcommand()
+  addSubcommand(sword)
+
+  // TODO: Add 'stray' commands create-builtin-user and resume-workflow
+
 }

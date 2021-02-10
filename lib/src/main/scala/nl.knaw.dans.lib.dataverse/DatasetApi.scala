@@ -282,14 +282,30 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   }
 
   /**
+   * This function has is called addFileItem to avoid nameing conflicts with addFile. The only difference is that this function takes the
+   * metadata as a string, whereas addFile takes it as a model object.
+   *
    * @see [[  https://guides.dataverse.org/en/latest/api/native-api.html#add-a-file-to-a-dataset]]
-   * @param dataFile        the file to upload
+   * @param optDataFile     optional file data to upload
+   * @param optFileMetadata optional metadata as a JSON string
+   * @return
+   */
+  def addFileItem(optDataFile: Option[File] = Option.empty, optFileMetadata: Option[String] = Option.empty): Try[DataverseResponse[FileList]] = {
+    trace(optDataFile, optFileMetadata)
+    if (optDataFile.isEmpty && optFileMetadata.isEmpty) Failure(new IllegalArgumentException("At least one of file data and file metadata must be provided."))
+    postFileToTarget[FileList]("add", optDataFile, optFileMetadata)
+  }
+
+  /**
+   * @see [[  https://guides.dataverse.org/en/latest/api/native-api.html#add-a-file-to-a-dataset]]
+   * @param optDataFile     optional file data to upload
    * @param optFileMetadata optional metadata for the file
    * @return
    */
-  def addFile(dataFile: File, optFileMetadata: Option[FileMeta] = Option.empty): Try[DataverseResponse[FileList]] = {
-    trace(dataFile, optFileMetadata)
-    postFileToTarget[FileList]("add", Option(dataFile), optFileMetadata.map(fm => Serialization.write(fm)))
+  def addFile(optDataFile: Option[File] = Option.empty, optFileMetadata: Option[FileMeta] = Option.empty): Try[DataverseResponse[FileList]] = {
+    trace(optDataFile, optFileMetadata)
+    if (optDataFile.isEmpty && optFileMetadata.isEmpty) Failure(new IllegalArgumentException("At least one of file data and file metadata must be provided."))
+    addFileItem(optDataFile, optFileMetadata.map(fm => Serialization.write(fm)))
   }
 
   /**
@@ -359,9 +375,8 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
 
     if (maybeLocks.isFailure) maybeLocks.map(_ => ())
     else if (!lockState(maybeLocks.get)) Failure(LockException(numberOfTimesTried, waitTimeInMilliseconds, errorMessage))
-    else Success(())
+         else Success(())
   }
-
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#dataset-locks]]

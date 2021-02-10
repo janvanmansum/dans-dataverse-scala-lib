@@ -16,21 +16,13 @@
 package nl.knaw.dans.easydv.subcommand
 
 import nl.knaw.dans.easydv.subCommandFooter
-import org.rogach.scallop.{ ScallopOption, Subcommand }
+import org.rogach.scallop.ScallopOption
 
-class DataverseSubcommand extends Subcommand("dataverse") {
+class DataverseSubcommand extends AbstractSubcommand("dataverse") {
   shortSubcommandsHelp(true)
   descr("Operations on a dataverse or sub-dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#dataverses")
   val alias: ScallopOption[String] = trailArg("dataverse-alias",
     descr = "The dataverse alias")
-
-  private def addSimpleCommand(name: String, description: String): Subcommand = {
-    val sc = new Subcommand(name) {
-      descr(description)
-    }
-    addSubcommand(sc)
-    sc
-  }
 
   val create = addSimpleCommand(
     name = "create",
@@ -61,7 +53,6 @@ class DataverseSubcommand extends Subcommand("dataverse") {
   val setFacets = addSimpleCommand(
     name = "list-facets",
     description = "Lists facets for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse")
-
 
   footer(subCommandFooter)
 }

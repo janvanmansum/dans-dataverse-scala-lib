@@ -15,10 +15,9 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import java.net.URI
-
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
+import java.net.URI
 import scala.util.Try
 
 class SwordApi private[dataverse](configuration: DataverseInstanceConfig) extends HttpSupport with DebugEnhancedLogging {

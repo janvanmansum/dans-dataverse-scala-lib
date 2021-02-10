@@ -30,7 +30,7 @@ object RedetectFile extends App with DebugEnhancedLogging with BaseApp {
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     detectResult <- response.data
-    _ = logger.info(s"New = ${detectResult.newContentType.getOrElse("n/a")}, old = ${detectResult.oldContentType.getOrElse("n/a")}, saved = ${!detectResult.dryRun}")
+    _ = logger.info(s"New = ${ detectResult.newContentType.getOrElse("n/a") }, old = ${ detectResult.oldContentType.getOrElse("n/a") }, saved = ${ !detectResult.dryRun }")
   } yield ()
   logger.info(s"result = $result")
 }

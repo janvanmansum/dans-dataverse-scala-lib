@@ -16,8 +16,8 @@
 package nl.knaw.dans.examples
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import org.json4s.{ DefaultFormats, Formats }
 import org.json4s.native.Serialization
+import org.json4s.{ DefaultFormats, Formats }
 
 object ViewDataset extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
@@ -29,7 +29,7 @@ object ViewDataset extends App with DebugEnhancedLogging with BaseApp {
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     dsv <- response.data
-    _ = logger.info(s"Version = ${dsv.versionNumber.getOrElse("?")}.${dsv.versionMinorNumber.getOrElse("?")}")
+    _ = logger.info(s"Version = ${ dsv.versionNumber.getOrElse("?") }.${ dsv.versionMinorNumber.getOrElse("?") }")
   } yield ()
   logger.info(s"result = $result")
 }

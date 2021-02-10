@@ -15,8 +15,8 @@
  */
 package nl.knaw.dans.examples
 
-import org.json4s.{ DefaultFormats, Formats }
 import org.json4s.native.Serialization
+import org.json4s.{ DefaultFormats, Formats }
 
 object GetUser extends App with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
@@ -27,7 +27,7 @@ object GetUser extends App with BaseApp {
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     user <- response.data
-    _ = logger.info(s"User first name is: '${user.firstName}'")
+    _ = logger.info(s"User first name is: '${ user.firstName }'")
   } yield ()
   logger.info(s"result = $result")
 }

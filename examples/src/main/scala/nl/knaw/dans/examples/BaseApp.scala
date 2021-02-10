@@ -15,14 +15,14 @@
  */
 package nl.knaw.dans.examples
 
-import java.net.URI
-
 import nl.knaw.dans.lib.dataverse.{ DataverseInstance, DataverseInstanceConfig }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.apache.commons.configuration.PropertiesConfiguration
 
-trait BaseApp extends DebugEnhancedLogging{
-  logger.info(s"Starting ${getClass.getName}")
+import java.net.URI
+
+trait BaseApp extends DebugEnhancedLogging {
+  logger.info(s"Starting ${ getClass.getName }")
   private val props = new PropertiesConfiguration("examples/dataverse.properties")
 
   val server = new DataverseInstance(
@@ -32,5 +32,4 @@ trait BaseApp extends DebugEnhancedLogging{
       unblockKey = Option(props.getString("unblockKey"))
     )
   )
-
 }

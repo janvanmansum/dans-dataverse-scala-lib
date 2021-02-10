@@ -15,7 +15,6 @@
  */
 package nl.knaw.dans.examples
 
-import nl.knaw.dans.examples.GetMetadataBlock.logger
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.{ DefaultFormats, Formats }
 

@@ -15,9 +15,10 @@
  */
 package nl.knaw.dans.easydv.subcommand
 
+import nl.knaw.dans.easydv.subCommandFooter
 import org.rogach.scallop.{ ScallopOption, Subcommand }
 
-class AdminSubcommand extends Subcommand("admin") {
+class AdminSubcommand extends AbstractSubcommand("admin") {
   shortSubcommandsHelp(true)
   descr("Operations via de admin API. See: https://guides.dataverse.org/en/latest/api/native-api.html#admin")
 
@@ -69,4 +70,6 @@ class AdminSubcommand extends Subcommand("admin") {
   addSubcommand(unsetDefaultWorkflow)
 
   // TODO: the 'whitelist' commands
+
+  footer(subCommandFooter)
 }

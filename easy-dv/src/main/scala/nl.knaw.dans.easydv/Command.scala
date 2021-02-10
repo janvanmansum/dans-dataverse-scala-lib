@@ -16,7 +16,7 @@
 package nl.knaw.dans.easydv
 
 import better.files.File
-import nl.knaw.dans.easydv.dispatcher.{ Admin, Dataverse }
+import nl.knaw.dans.easydv.dispatcher.{ Admin, Dataset, Dataverse }
 import nl.knaw.dans.lib.dataverse.{ DataverseException, DataverseInstance }
 import nl.knaw.dans.lib.error.TryExtensions
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
@@ -38,6 +38,16 @@ object Command extends App with DebugEnhancedLogging {
 
   val result: Try[FeedBackMessage] = commandLine.subcommands match {
     case commandLine.dataverse :: _ => Dataverse.dispatch(commandLine, instance.dataverse(commandLine.dataverse.alias()))
+    case commandLine.dataset :: _ => Dataset.dispatch(commandLine, {
+      val id = commandLine.dataset.id()
+      if (id.forall(_.isDigit)) instance.dataset(id.toInt)
+      else instance.dataset(id)
+    })
+    case commandLine.file :: _ => dispatcher.File.dispatch(commandLine, {
+      val id = commandLine.file.id()
+      if (id.forall(_.isDigit)) instance.file(id.toInt)
+      else instance.file(id)
+    })
     case commandLine.admin :: _ => Admin.dispatch(commandLine, instance.admin())
     case _ => Failure(new RuntimeException(s"Unkown command: $commandLine"))
   }

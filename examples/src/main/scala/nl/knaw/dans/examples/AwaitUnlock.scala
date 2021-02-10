@@ -16,7 +16,6 @@
 package nl.knaw.dans.examples
 
 import better.files.File
-import nl.knaw.dans.lib.dataverse.model.file.FileMeta
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
@@ -31,7 +30,7 @@ object AwaitUnlock extends App with DebugEnhancedLogging with BaseApp {
   private val filePath = File(args(1))
 
   val result = for {
-    response <- server.dataset(persistentId).addFile(filePath)
+    response <- server.dataset(persistentId).addFile(Option(filePath))
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")

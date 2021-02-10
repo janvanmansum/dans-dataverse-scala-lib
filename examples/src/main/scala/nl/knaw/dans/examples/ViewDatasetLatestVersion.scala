@@ -29,7 +29,7 @@ object ViewDatasetLatestVersion extends App with DebugEnhancedLogging with BaseA
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     dataset <- response.data
-    _ = logger.info(s"Latest version number: ${dataset.latestVersion.versionNumber.getOrElse("?")}.${dataset.latestVersion.versionMinorNumber.getOrElse("?")}")
+    _ = logger.info(s"Latest version number: ${ dataset.latestVersion.versionNumber.getOrElse("?") }.${ dataset.latestVersion.versionMinorNumber.getOrElse("?") }")
   } yield ()
   logger.info(s"result = $result")
 }

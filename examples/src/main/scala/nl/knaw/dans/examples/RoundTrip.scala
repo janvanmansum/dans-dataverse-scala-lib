@@ -52,7 +52,7 @@ object RoundTrip extends App with DebugEnhancedLogging with BaseApp {
     // View its info
     response <- server.dataverse("brave").view()
     dv <- response.data
-    _ = logger.info(s"The type of dataverse is: ${dv.dataverseType}")
+    _ = logger.info(s"The type of dataverse is: ${ dv.dataverseType }")
 
     // Create a subsubverse
     response <- server.dataverse("brave").create(subsub)
@@ -62,12 +62,12 @@ object RoundTrip extends App with DebugEnhancedLogging with BaseApp {
     // Publish brave
     response <- server.dataverse("brave").publish()
     dv <- response.data
-    _ = logger.info(s"Published dataverse '${dv.alias}' which was created at: ${dv.creationDate.getOrElse("n/a")}")
+    _ = logger.info(s"Published dataverse '${ dv.alias }' which was created at: ${ dv.creationDate.getOrElse("n/a") }")
 
     // List facets
     response <- server.dataverse("brave").listFacets()
     facets <- response.data
-    _ = logger.info(s"Active facets: ${facets.map(f=> s"'${f}'").mkString(",")}")
+    _ = logger.info(s"Active facets: ${ facets.map(f => s"'${ f }'").mkString(",") }")
 
     // Create a new dataset
     // TODO: create dataset, add files, create versions, delete dataset?
@@ -75,12 +75,12 @@ object RoundTrip extends App with DebugEnhancedLogging with BaseApp {
     // Delete the subsubverse
     response <- server.dataverse("subsub").delete()
     m <- response.data
-    _ = logger.info(s"${m.message}")
+    _ = logger.info(s"${ m.message }")
 
     // Delete the subverse
     response <- server.dataverse("brave").delete()
     m <- response.data
-    _ = logger.info(s"${m.message}")
+    _ = logger.info(s"${ m.message }")
   } yield ()
   logger.info(s"Result = $result")
 }

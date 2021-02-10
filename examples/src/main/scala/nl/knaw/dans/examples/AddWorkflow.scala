@@ -33,7 +33,7 @@ object AddWorkflow extends App with DebugEnhancedLogging with BaseApp {
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     wf <- response.data
-    _ = logger.info(s"Workflow name: ${wf.name}")
+    _ = logger.info(s"Workflow name: ${ wf.name }")
   } yield ()
   logger.info(s"result = $result")
 }

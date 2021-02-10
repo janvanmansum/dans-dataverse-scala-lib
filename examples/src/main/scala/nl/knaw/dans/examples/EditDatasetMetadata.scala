@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.examples
 
-import nl.knaw.dans.lib.dataverse.model.dataset.{ CompoundField, ControlledMultipleValueField, FieldList, MetadataBlock, MetadataBlocks, PrimitiveSingleValueField, toFieldMap }
+import nl.knaw.dans.lib.dataverse.model.dataset.{ FieldList, PrimitiveSingleValueField }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
@@ -24,7 +24,8 @@ object EditDatasetMetadata extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
   private val persistentId = args(0)
   private val title = args(1)
-  private val optLockOverride = if (args.length > 2) Option(args(2)) else None
+  private val optLockOverride = if (args.length > 2) Option(args(2))
+                                else None
 
   private val fieldList: FieldList = FieldList(
     List(PrimitiveSingleValueField("title", s"$title"))

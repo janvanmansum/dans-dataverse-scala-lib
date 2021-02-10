@@ -30,7 +30,7 @@ object ListFiles extends App with DebugEnhancedLogging with BaseApp {
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     files <- response.data
-    _ = logger.info(s"Filenames: ${files.map(_.label.getOrElse("n/a")).mkString(", ")}")
+    _ = logger.info(s"Filenames: ${ files.map(_.label.getOrElse("n/a")).mkString(", ") }")
   } yield ()
   logger.info(s"result = $result")
 }

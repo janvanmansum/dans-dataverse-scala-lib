@@ -15,12 +15,11 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import java.net.URI
-
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import org.json4s.{ DefaultFormats, Formats }
 import org.json4s.native.Serialization
+import org.json4s.{ DefaultFormats, Formats }
 
+import java.net.URI
 import scala.util.Try
 
 /**
@@ -43,15 +42,12 @@ class BuiltinUserApi private[dataverse](configuration: DataverseInstanceConfig) 
 
   /**
    * @see [[https://guides.dataverse.org/en/5.2/api/native-api.html#create-a-builtin-user]]
-   * @param user the user account info
-   * @param password the password to set for the new user
+   * @param user            the user account info
+   * @param password        the password to set for the new user
    * @param builtInUsersKey the key that allows you to create built-in users via the API
    * @return
    */
   def create(user: model.BuiltinUser, password: String, builtInUsersKey: String): Try[DataverseResponse[Any]] = {
     postJson[Any]("builtin-users", Serialization.write(user), Map.empty, Map("password" -> password, "key" -> builtInUsersKey))
   }
-
-
-
 }

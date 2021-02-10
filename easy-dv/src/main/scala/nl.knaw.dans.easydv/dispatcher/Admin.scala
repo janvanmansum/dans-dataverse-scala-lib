@@ -81,7 +81,7 @@ object Admin extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "unset-default-workflow"
-      case _ => Failure(new RuntimeException(s"Unknown admin command: ${commandLine.args.tail.mkString(" ")}"))
+      case _ => Failure(new RuntimeException(s"Unknown admin command: ${ commandLine.args.tail.mkString(" ") }"))
     }
   }
 }

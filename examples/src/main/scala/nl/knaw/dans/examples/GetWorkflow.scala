@@ -30,8 +30,8 @@ object GetWorkflow extends App with DebugEnhancedLogging with BaseApp {
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     wf <- response.data
     _ = logger.info(s"Workflow name = ${ wf.name }")
-    _ = logger.info(s"Workflow step 1 type = ${ wf.steps.map(_.stepType).headOption.getOrElse("NO STEPS PROVIDED")}")
-    _ = logger.info(s"Workflow step 2 parameters = ${ wf.steps.map(_.parameters).headOption.getOrElse("NO STEPS PROVIDED")}")
+    _ = logger.info(s"Workflow step 1 type = ${ wf.steps.map(_.stepType).headOption.getOrElse("NO STEPS PROVIDED") }")
+    _ = logger.info(s"Workflow step 2 parameters = ${ wf.steps.map(_.parameters).headOption.getOrElse("NO STEPS PROVIDED") }")
   } yield ()
   logger.info(s"result = $result")
 }

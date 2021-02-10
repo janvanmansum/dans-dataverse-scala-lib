@@ -15,14 +15,13 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import java.nio.charset.StandardCharsets
-
 import nl.knaw.dans.lib.dataverse.model.DataverseMessage
 import nl.knaw.dans.lib.dataverse.model.dataset.MetadataFieldSerializer
 import org.json4s.native.JsonMethods
 import org.json4s.{ DefaultFormats, Formats, JValue }
 import scalaj.http.HttpResponse
 
+import java.nio.charset.StandardCharsets
 import scala.util.Try
 
 /**

@@ -33,7 +33,5 @@ package object model {
     val curator, contributor, none = Value
   }
 
-
-
 }
 

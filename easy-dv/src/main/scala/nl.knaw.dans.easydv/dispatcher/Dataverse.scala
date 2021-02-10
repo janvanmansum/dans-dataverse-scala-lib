@@ -72,9 +72,7 @@ object Dataverse extends DebugEnhancedLogging {
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "create role"
 
-
-
-      case _ => Failure(new RuntimeException(s"Unkown dataverse sub-command: ${commandLine.args.tail.mkString(" ")}"))
+      case _ => Failure(new RuntimeException(s"Unkown dataverse sub-command: ${ commandLine.args.tail.mkString(" ") }"))
     }
   }
 }

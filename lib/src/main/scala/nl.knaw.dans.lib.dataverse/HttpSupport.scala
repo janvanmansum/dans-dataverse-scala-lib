@@ -15,13 +15,13 @@
  */
 package nl.knaw.dans.lib.dataverse
 
+import better.files.File
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import scalaj.http.{ Http, HttpRequest, MultiPart, MultiPartConnectFunc }
+
 import java.io.FileInputStream
 import java.net.URI
 import java.nio.charset.StandardCharsets
-import better.files.File
-import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import scalaj.http.{ Http, HttpRequest, HttpResponse, MultiPart, MultiPartConnectFunc }
-
 import scala.collection.mutable
 import scala.util.Try
 

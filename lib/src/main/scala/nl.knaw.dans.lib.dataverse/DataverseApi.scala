@@ -15,13 +15,12 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import java.net.URI
-
 import nl.knaw.dans.lib.dataverse.model.DefaultRole.DefaultRole
 import nl.knaw.dans.lib.dataverse.model._
 import nl.knaw.dans.lib.dataverse.model.dataset.DatasetCreationResult
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
+import java.net.URI
 import scala.util.Try
 
 class DataverseApi private[dataverse](dvId: String, configuration: DataverseInstanceConfig) extends HttpSupport with DebugEnhancedLogging {
@@ -122,7 +121,6 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
       response <- createRole(jsonString)
     } yield response
   }
-
 
   /**
    * Creates a role base on a definition provided as model object.

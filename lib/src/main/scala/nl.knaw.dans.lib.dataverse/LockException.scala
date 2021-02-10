@@ -15,14 +15,12 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import nl.knaw.dans.lib.dataverse.model.Lock
-
 /**
  * Thrown by [[DatasetApi#awaitUnlock]] if the maximum number of tries is reached and the dataset is still locked.
  *
- * @param numberOfTimesTried how many times the unlock check was tried
+ * @param numberOfTimesTried     how many times the unlock check was tried
  * @param waitTimeInMilliseconds time waited between tries
- * @param msg message
+ * @param msg                    message
  */
 case class LockException(numberOfTimesTried: Int, waitTimeInMilliseconds: Int, msg: String) extends RuntimeException(s"$msg. Number of tries = $numberOfTimesTried, wait time between tries = $waitTimeInMilliseconds ms.")
 
