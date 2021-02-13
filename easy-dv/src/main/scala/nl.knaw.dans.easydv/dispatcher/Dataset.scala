@@ -38,7 +38,28 @@ object Dataset extends DebugEnhancedLogging {
           response <- d.view()
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
-        } yield "create dataverse"
+        } yield "view"
+
+
+      // TODO: view-all-versions
+      // TODO: export-metadata
+      // TODO: list-files
+      // TODO: list-metadata-blocks
+      // TODO: get-metadata-block
+      // TODO: update-metadata
+      // TODO: edit-metadata
+      // TODO: delete-metadata
+      // TODO: publish
+      // TODO: delete-draft
+      // TODO: set-citation-date-field
+      // TODO: revert-citation-date-field
+      // TODO: list-role-assignments
+      // TODO: assign-role
+      // TODO: delete-role-assignment
+      // TODO: create-private-url
+      // TODO: get-private-url
+      // TODO: delete-private-url
+
       case commandLine.dataset :: commandLine.dataset.addFile :: Nil =>
         for {
           metadata <- if (commandLine.dataset.addFile.metadata()) getStringFromStd
@@ -51,6 +72,17 @@ object Dataset extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "add-file"
+
+      // TODO: storage-size
+      // TODO: download-size
+      // TODO: submit-for-review
+      // TODO: return-to-author
+      // TODO: link
+      // TODO: get-locks
+      // TODO: delete
+      // TODO: destroy
+      // TODO: await-unlock
+      // TODO: await-lock
 
       case _ => Failure(new RuntimeException(s"Unkown dataverse sub-command: ${ commandLine.args.tail.mkString(" ") }"))
     }

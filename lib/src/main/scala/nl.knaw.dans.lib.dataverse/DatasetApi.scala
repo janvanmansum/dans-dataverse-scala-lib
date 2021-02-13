@@ -282,8 +282,8 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   }
 
   /**
-   * This function has is called addFileItem to avoid nameing conflicts with addFile. The only difference is that this function takes the
-   * metadata as a string, whereas addFile takes it as a model object.
+   * This function is called addFileItem instead of simply addFile to avoid nameing conflicts with the other addFile function. The only difference is that
+   * this function takes the metadata as a string, whereas addFile takes it as a model object.
    *
    * @see [[  https://guides.dataverse.org/en/latest/api/native-api.html#add-a-file-to-a-dataset]]
    * @param optDataFile     optional file data to upload
@@ -307,6 +307,41 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
     if (optDataFile.isEmpty && optFileMetadata.isEmpty) Failure(new IllegalArgumentException("At least one of file data and file metadata must be provided."))
     addFileItem(optDataFile, optFileMetadata.map(fm => Serialization.write(fm)))
   }
+
+  // TODO: storage-size
+  // TODO: download-size
+  // TODO: submit-for-review
+  // TODO: return-to-author
+  // TODO: link
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#dataset-locks]]
+   * @return
+   */
+  def getLocks: Try[DataverseResponse[List[Lock]]] = {
+    trace(())
+    getUnversionedFromTarget[List[Lock]]("locks")
+  }
+
+  // TODO: metrics. First install/enable Make Data Count ?
+
+  // TODO: delete
+
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-published-dataset]]
+   * @return
+   */
+  def destroy(): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    deleteAtTarget[DataMessage]("destroy")
+  }
+
+  /// https://guides.dataverse.org/en/latest/admin/dataverses-datasets.html#configure-a-dataset-to-store-all-new-files-in-a-specific-file-store
+  // TODO: get-storage-driver
+  // TODO: set-storage-driver
+  // TODO: reset-storage-driver
+
 
   /**
    * Utility function that lets you wait until all locks are cleared before proceeding. Unlike most other functions
@@ -378,21 +413,5 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
          else Success(())
   }
 
-  /**
-   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#dataset-locks]]
-   * @return
-   */
-  def getLocks: Try[DataverseResponse[List[Lock]]] = {
-    trace(())
-    getUnversionedFromTarget[List[Lock]]("locks")
-  }
 
-  /**
-   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-published-dataset]]
-   * @return
-   */
-  def destroy(): Try[DataverseResponse[DataMessage]] = {
-    trace(())
-    deleteAtTarget[DataMessage]("destroy")
-  }
 }

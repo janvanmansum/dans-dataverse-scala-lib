@@ -26,9 +26,29 @@ class DatasetSubcommand extends AbstractSubcommand("dataset") {
   val id: ScallopOption[String] = trailArg("id",
     descr = "dataset identifier; if it consists of only numbers, it is taken to be a database ID, otherwise as a persistent ID")
 
+  // TODO: add version parameter
   val view = addSimpleCommand(
     name = "view",
     description = "Get JSON Representation of a Dataset. See: https://guides.dataverse.org/en/latest/api/native-api.html#get-json-representation-of-a-dataset")
+
+  // TODO: view-all-versions
+  // TODO: export-metadata
+  // TODO: list-files
+  // TODO: list-metadata-blocks
+  // TODO: get-metadata-block
+  // TODO: update-metadata
+  // TODO: edit-metadata
+  // TODO: delete-metadata
+  // TODO: publish
+  // TODO: delete-draft
+  // TODO: set-citation-date-field
+  // TODO: revert-citation-date-field
+  // TODO: list-role-assignments
+  // TODO: assign-role
+  // TODO: delete-role-assignment
+  // TODO: create-private-url
+  // TODO: get-private-url
+  // TODO: delete-private-url
 
   val addFile = new Subcommand("add-file") {
     descr("Adds file data and/or metadata to a dataset. See: https://guides.dataverse.org/en/latest/api/native-api.html#add-a-file-to-a-dataset")
@@ -36,6 +56,17 @@ class DatasetSubcommand extends AbstractSubcommand("dataset") {
     val metadata: ScallopOption[Boolean] = opt(name = "metadata-from-stdin", descr = "Read metadata from STDIN")
   }
   addSubcommand(addFile)
+
+  // TODO: storage-size
+  // TODO: download-size
+  // TODO: submit-for-review
+  // TODO: return-to-author
+  // TODO: link
+  // TODO: get-locks
+  // TODO: delete
+  // TODO: destroy
+  // TODO: await-unlock
+  // TODO: await-lock
 
   footer(subCommandFooter)
 }
