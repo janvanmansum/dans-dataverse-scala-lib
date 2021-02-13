@@ -324,4 +324,19 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
     trace(())
     postJson[model.Dataverse](s"dataverses/$dvId/actions/:publish")
   }
+
+  /*
+   * Explicit groups have their own section in the API manual (https://guides.dataverse.org/en/latest/api/native-api.html#explicit-groups) but
+   * they all operate on a dataverse, so we add them to the dataverse API.
+   */
+
+  // TODO: create-group
+  // TODO: list-groups
+  // TODO: view-group
+  // TODO: update-group
+  // TODO: delete-group
+  // TODO: add-role-assignee-to-group
+  // TODO: add-multiple-role-assignees-to-group
+  // TODO: remove-role-assignee-from-group
+
 }

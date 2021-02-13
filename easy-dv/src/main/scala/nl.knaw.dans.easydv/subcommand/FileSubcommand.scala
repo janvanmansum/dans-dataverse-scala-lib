@@ -24,9 +24,22 @@ class FileSubcommand extends AbstractSubcommand("file") {
   val id: ScallopOption[String] = trailArg("id",
     descr = "dataset identifier; if it consists of only numbers, it is taken to be a database ID, otherwise as a persistent ID")
 
+  // TODO: download
+  // TODO: restrict
+  // TODO: uningest
+  // TODO: reingest
+  // TODO: redetect
+  // TODO: replace
+  // TODO: get-metadata
+
   val updateMetadata = addSimpleCommand(
     name = "update-metadata",
     description = "Updates the file metadata. See: https://guides.dataverse.org/en/latest/api/native-api.html#updating-file-metadata")
+
+  // TODO: edit-variable-metadata
+  // TODO: get-provenance (json, description)
+  // TODO: add-provenance (json, description)
+  // TODO: delete-provenance (json, description)
 
   footer(subCommandFooter)
 }

@@ -31,7 +31,52 @@ object Admin extends DebugEnhancedLogging {
 
   def dispatch(commandLine: CommandLineOptions, admin: AdminApi)(implicit resultOutput: PrintStream): Try[FeedBackMessage] = {
     trace(())
+
     commandLine.subcommands match {
+      // TODO: list-database-settings
+      // TODO: set-database-setting
+      // TODO: get-database-setting
+      // TODO: delete-database-setting
+
+      // TODO: add-banner-message
+      // TODO: get-banner-messages
+      // TODO: delete-banner-message
+      // TODO: deactivate-banner-message
+
+      // TODO: list-authentication-provider-factories
+      // TODO: list-authentication-providers
+      // TODO: add-authentication-provider
+      // TODO: view-authentication-provider
+      // TODO: set-authentication-provider-enabled (true/false)
+      // TODO: is-authentication-provider-enabled (true/false)
+      // TODO: delete-authentication-provider
+
+      // TODO: list-roles
+      // TODO: create-role
+
+      // TODO: list-users
+      // TODO: get-user
+
+      // TODO: create-user
+      // TODO: merge-users
+      // TODO: change-user-identifier
+      // TODO: make-superuser
+      // TODO: delete-user
+
+      // TODO: list-role-assignments (assignee)
+      // TODO: list-permissions (user)
+      // TODO: view-roles-assignee
+
+      // TODO: list-saved-searches
+      // TODO: view-saved-search
+      // TODO: make-links (all/id)
+
+      // TODO: fix-missing-unf
+      // TODO: compute-datafile-hash
+      // TODO: validate-datafile-hash
+      // TODO: validate-dataset-datafile-hashes
+      // TODO: validate-dataset
+
       case commandLine.admin :: commandLine.admin.getAllWorkflows :: Nil =>
         for {
           response <- admin.getWorkflows
@@ -81,6 +126,14 @@ object Admin extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "unset-default-workflow"
+
+
+      // TODO: set-workflows-whitelist
+      // TODO: get-workflows-whitelist
+      // TODO: delete-workflows-whitelist
+      // TODO: clear-metrics-cache [db-name]
+      // TODO: add-dataverse-role-assignments-to-children// TODO
+
       case _ => Failure(new RuntimeException(s"Unknown admin command: ${ commandLine.args.tail.mkString(" ") }"))
     }
   }
