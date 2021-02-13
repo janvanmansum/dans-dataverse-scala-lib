@@ -38,31 +38,39 @@ object Dataverse extends DebugEnhancedLogging {
           response <- dv.create(dvDef)
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
-        } yield "create dataverse"
+        } yield "create"
       case commandLine.dataverse :: commandLine.dataverse.view :: Nil =>
         for {
           response <- dv.view()
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
-        } yield "view dataverse"
+        } yield "view"
       case commandLine.dataverse :: commandLine.dataverse.delete :: Nil =>
         for {
           response <- dv.delete()
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
-        } yield "delete dataverse"
+        } yield "delete"
       case commandLine.dataverse :: commandLine.dataverse.contents :: Nil =>
         for {
           response <- dv.contents()
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
-        } yield "view contents"
+        } yield "contents"
+
+
+      // TODO: storage-size
+
       case commandLine.dataverse :: commandLine.dataverse.listRoles :: Nil =>
         for {
           response <- dv.listRoles()
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
-        } yield "list roles"
+        } yield "list-roles"
+
+      // TODO: list-facets
+      // TODO: set-facets
+
       case commandLine.dataverse :: commandLine.dataverse.createRole :: Nil =>
         for {
           dvDef <- getStringFromStd
@@ -70,7 +78,20 @@ object Dataverse extends DebugEnhancedLogging {
           response <- dv.createRole(dvDef)
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
-        } yield "create role"
+        } yield "create-role"
+
+      // TODO: list-role-assignments
+      // TODO: set-default-role
+      // TODO: assign-role
+      // TODO: delete-role-assignment
+      // TODO: list-metadata-blocks
+      // TODO: set-metadata-blocks
+      // TODO: is-metadata-blocks-root
+      // TODO: set-metadata-blocks-root
+      // TODO: create-dataset
+      // TODO: import-dataset
+      // TODO: import-dataset-ddi
+      // TODO: publish
 
       case _ => Failure(new RuntimeException(s"Unkown dataverse sub-command: ${ commandLine.args.tail.mkString(" ") }"))
     }

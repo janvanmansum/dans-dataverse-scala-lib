@@ -36,23 +36,55 @@ class DataverseSubcommand extends AbstractSubcommand("dataverse") {
   val contents = addSimpleCommand(
     name = "contents",
     description = "Displays dataverse contents. See: https://guides.dataverse.org/en/latest/api/native-api.html#show-contents-of-a-dataverse")
+
+  // TODO: storage-size
+  val storageSize = addSimpleCommand(
+    name = "storage-size",
+    description = "Displays the storages size in bytes for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataverse")
+
   val listRoles = addSimpleCommand(
     name = "list-roles",
     description = "Lists roles defined in dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-roles-defined-in-a-dataverse")
+
+  // TODO: list-facets
+  val listFacets = addSimpleCommand(
+    name = "list-facets",
+    description = "Lists facets for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse")
+
+  // TODO: set-facets
+
   val createRole = addSimpleCommand(
     name = "create-role",
     description = "Creates a role based on the JSON definition on STDIN. See: https://guides.dataverse.org/en/latest/api/native-api.html#create-a-new-role-in-a-dataverse")
 
-  // TODO: impl
-  val storageSize = addSimpleCommand(
-    name = "storage-size",
-    description = "Displays the storages size in bytes for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataverse")
-  val listFacets = addSimpleCommand(
-    name = "list-facets",
-    description = "Lists facets for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse")
-  val setFacets = addSimpleCommand(
-    name = "list-facets",
-    description = "Lists facets for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse")
+  // TODO: list-role-assignments
+  val listRoleAssignments = addSimpleCommand(
+    name = "list-role-assignments",
+    description = "List all the role assignments at the given dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-role-assignments-in-a-dataverse")
+
+  // TODO: set-default-role
+  val setDefaultRole = addSimpleCommand(
+    name = "set-default-role",
+    description = "Assigns a default role to a user creating a dataset in a dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#assign-default-role-to-user-creating-a-dataset-in-a-dataverse")
+
+  // TODO: assign-role
+  val assignRole = addSimpleCommand(
+    name = "assign-role",
+    description = "Assigns a role. See: https://guides.dataverse.org/en/latest/api/native-api.html#assign-a-new-role-on-a-dataverse")
+
+  // TODO: delete-role-assignment
+  val deleteRoleAssignment = addSimpleCommand(
+    name = "delete-role-assignment",
+    description = "Deletes a role assignment. Use list-role-assignments to get the ID")
+
+  // TODO: list-metadata-blocks
+  // TODO: set-metadata-blocks
+  // TODO: is-metadata-blocks-root
+  // TODO: set-metadata-blocks-root
+  // TODO: create-dataset
+  // TODO: import-dataset
+  // TODO: import-dataset-ddi
+  // TODO: publish
 
   footer(subCommandFooter)
 }

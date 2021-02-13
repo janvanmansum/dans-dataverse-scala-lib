@@ -97,6 +97,17 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
   }
 
   /**
+   * Return the data (file) size of a Dataverse.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataverse]]
+   * @return
+   */
+  def storageSize(): Try[DataverseResponse[Nothing]] = {
+    trace(())
+    get[Nothing](s"dataverses/$dvId/storagesize")
+  }
+
+  /**
    * Returns the roles defined in a dataverse.
    *
    * @see https://guides.dataverse.org/en/latest/api/native-api.html#list-roles-defined-in-a-dataverse
@@ -105,6 +116,32 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
   def listRoles(): Try[DataverseResponse[List[Role]]] = {
     trace(())
     get[List[Role]](s"dataverses/$dvId/roles")
+  }
+
+  /**
+   * Returns the list of active facets for a dataverse.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse]]
+   * @return
+   */
+  def listFacets(): Try[DataverseResponse[List[String]]] = {
+    trace(())
+    get[List[String]](s"dataverses/$dvId/facets")
+  }
+
+  /**
+   * Sets the list of active facets for a dataverse.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#set-facets-for-a-dataverse]]
+   * @param facets the list of facets
+   * @return
+   */
+  def setFacets(facets: List[String]): Try[DataverseResponse[Nothing]] = {
+    trace(facets)
+    for {
+      jsonString <- serializeAsJson(facets, logger.underlying.isDebugEnabled)
+      response <- postJson[Nothing](s"dataverses/$dvId/facets", jsonString)
+    } yield response
   }
 
   /**
@@ -133,43 +170,6 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
     trace(s)
     for {
       response <- postJson[Role](s"dataverses/$dvId/roles", s)
-    } yield response
-  }
-
-  /**
-   * Return the data (file) size of a Dataverse.
-   *
-   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataverse]]
-   * @return
-   */
-  def storageSize(): Try[DataverseResponse[Nothing]] = {
-    trace(())
-    get[Nothing](s"dataverses/$dvId/storagesize")
-  }
-
-  /**
-   * Returns the list of active facets for a dataverse.
-   *
-   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse]]
-   * @return
-   */
-  def listFacets(): Try[DataverseResponse[List[String]]] = {
-    trace(())
-    get[List[String]](s"dataverses/$dvId/facets")
-  }
-
-  /**
-   * Sets the list of active facets for a dataverse.
-   *
-   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#set-facets-for-a-dataverse]]
-   * @param facets the list of facets
-   * @return
-   */
-  def setFacets(facets: List[String]): Try[DataverseResponse[Nothing]] = {
-    trace(facets)
-    for {
-      jsonString <- serializeAsJson(facets, logger.underlying.isDebugEnabled)
-      response <- postJson[Nothing](s"dataverses/$dvId/facets", jsonString)
     } yield response
   }
 
