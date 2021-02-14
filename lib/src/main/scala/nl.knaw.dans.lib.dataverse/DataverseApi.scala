@@ -281,6 +281,38 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
   }
 
   /**
+   * Import a dataset with an existing persistent identifier, which must be provided as a separate parameter. The dataset
+   * will be imported as a draft.
+   *
+   * @param s   string with the JSON definition of the dataset
+   * @param pid the PID
+   * @return
+   */
+  def importDataset(s: String, pid: String): Try[DataverseResponse[DatasetCreationResult]] = {
+    importDataset(s, pid, autoPublish = false)
+  }
+
+  /**
+   * Import a dataset with an existing persistent identifier, which must be provided as a separate parameter. The dataset
+   * will be automatically published after import if `autoPublish` is set to `true`.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#import-a-dataset-into-a-dataverse]]
+   * @param s           string with the JSON definition of the dataset
+   * @param pid         the PID
+   * @param autoPublish whether to immediately publish the dataset
+   * @return
+   */
+  def importDataset(s: String, pid: String, autoPublish: Boolean): Try[DataverseResponse[DatasetCreationResult]] = {
+    trace(s, autoPublish)
+    for {
+      response <- postJson[DatasetCreationResult](
+        subPath = s"dataverses/$dvId/datasets/:import",
+        body = s,
+        params = Map("pid" -> pid, "release" -> autoPublish.toString))
+    } yield response
+  }
+
+  /**
    * Import a dataset with an existing persistent identifier, which can be provided as a parameter or in the [[Dataset]] object's
    * protocol, authority and identifier fields. (E.g. for a DOI: protocol = "doi", authority = "10.5072", identifier = "FK2/12345".)
    *
@@ -296,11 +328,7 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
       _ = if (pid.isEmpty) throw new IllegalArgumentException("PID must be provided either as parameter or in the (protocol, authority, identifier) fields of the dataset model object")
       _ = debug(s"Found pid = $pid")
       jsonString <- serializeAsJson(dataset, logger.underlying.isDebugEnabled)
-      response <- postJson[DatasetCreationResult](
-        subPath = s"dataverses/$dvId/datasets/:import",
-        body = jsonString,
-        params = Map("pid" -> pid,
-          "release" -> autoPublish.toString))
+      response <- importDataset(jsonString, pid, autoPublish)
     } yield response
   }
 
@@ -311,7 +339,6 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
     else Some(s"${ dataset.datasetVersion.protocol.get }:${ dataset.datasetVersion.authority.get }/${ dataset.datasetVersion.identifier.get }")
   }
 
-  // TODO: importDataset(jsonFile)
   // TODO: importDataset(ddiFile)
 
   /**
@@ -330,13 +357,101 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
    * they all operate on a dataverse, so we add them to the dataverse API.
    */
 
-  // TODO: create-group
-  // TODO: list-groups
-  // TODO: view-group
-  // TODO: update-group
-  // TODO: delete-group
-  // TODO: add-role-assignee-to-group
-  // TODO: add-multiple-role-assignees-to-group
-  // TODO: remove-role-assignee-from-group
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#create-new-explicit-group]]
+   * @param s JSON document with the definition of the group
+   * @return
+   */
+  def createGroup(s: String): Try[DataverseResponse[Group]] = {
+    trace(s)
+    postJson[Group](s"dataverses/$dvId/groups", s)
+  }
 
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#create-new-explicit-group]]
+   * @param group model object of the group
+   * @return
+   */
+  def createGroup(group: Group): Try[DataverseResponse[Group]] = {
+    trace(group)
+    for {
+      jsonString <- serializeAsJson(group, logger.underlying.isDebugEnabled)
+      response <- createGroup(jsonString)
+    } yield response
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#list-explicit-groups-in-a-dataverse]]
+   * @return
+   */
+  def listGroups(): Try[DataverseResponse[List[Group]]] = {
+    trace(())
+    get[List[Group]](s"dataverses/$dvId/groups")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#show-single-group-in-a-dataverse]]
+   * @return
+   */
+  def getGroup(alias: String): Try[DataverseResponse[Group]] = {
+    trace(())
+    get[Group](s"dataverses/$dvId/groups/$alias")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#update-group-in-a-dataverse]]
+   * @param groupAlias alias of the group to update
+   * @param s          JSON document with the definition of the group
+   * @return
+   */
+  def updateGroup(groupAlias: String, s: String): Try[DataverseResponse[Group]] = {
+    trace(groupAlias, s)
+    putJson[Group](s"dataverses/$dvId/groups/$groupAlias", s)
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#update-group-in-a-dataverse]]
+   * @param groupAlias alias of the group to update
+   * @param group      model object of the group
+   * @return
+   */
+  def updateGroup(groupAlias: String, group: Group): Try[DataverseResponse[Group]] = {
+    trace(groupAlias, group)
+    for {
+      jsonString <- serializeAsJson(group, logger.underlying.isDebugEnabled)
+      response <- updateGroup(groupAlias, jsonString)
+    } yield response
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-group-from-a-dataverse]]
+   * @param groupAlias alias of the group to delete
+   * @return
+   */
+  def deleteGroup(groupAlias: String): Try[DataverseResponse[DataMessage]] = {
+    trace(groupAlias)
+    deletePath[DataMessage](s"dataverses/$dvId/groups/$groupAlias")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#add-multiple-role-assignees-to-an-explicit-group]]
+   * @param groupAlias alias of the group
+   * @param assignees  assignees to add
+   * @return
+   */
+  def addRoleAssigneesToGroup(groupAlias: String, assignees: List[String]): Try[DataverseResponse[Group]] = {
+    trace(groupAlias, assignees)
+    postJson[Group](s"dataverses/$dvId/groups/$groupAlias/roleAssignees", assignees.map(a => s""""$a"""").mkString("[", ",", "]"))
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-group-from-a-dataverse]]
+   * @param groupAlias alias of the group
+   * @param assignee   assignee to remove
+   * @return
+   */
+  def deleteAssigneeFromGroup(groupAlias: String, assignee: String): Try[DataverseResponse[Group]] = {
+    trace(groupAlias, assignee)
+    deletePath[Group](s"dataverses/$dvId/groups/$groupAlias/roleAssignees/$assignee")
+  }
 }

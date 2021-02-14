@@ -126,6 +126,16 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
     } yield response
   }
 
+  protected def putJson[D: Manifest](subPath: String = null,
+                                     body: String = null,
+                                     headers: Map[String, String] = Map.empty,
+                                     params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
+    for {
+      uri <- createUri(Option(subPath))
+      response <- putString[D](uri, body, headers ++ Map(HEADER_CONTENT_TYPE -> MEDIA_TYPE_JSON), params)
+    } yield response
+  }
+
   protected def deletePath[D: Manifest](subPath: String = null, headers: Map[String, String] = Map.empty, params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
     for {
       uri <- createUri(Option(subPath))

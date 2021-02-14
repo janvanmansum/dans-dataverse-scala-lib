@@ -20,7 +20,7 @@ import org.rogach.scallop.ScallopConf
 
 class CommandLineOptions(args: Array[String], configuration: Configuration) extends ScallopConf(args) {
   appendDefaultToDescription = true
-  editBuilder(_.setHelpWidth(110))
+  editBuilder(_.setHelpWidth(200))
   printedName = "easy-dv"
   version(configuration.version)
   val description: String = s"""Easy-to-use command line client for the Dataverse API"""

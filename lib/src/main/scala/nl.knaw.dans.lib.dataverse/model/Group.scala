@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.lib.dataverse
+package nl.knaw.dans.lib.dataverse.model
 
-class InfoApi {
-  // TODO: version
-  // TODO: server
-  // TODO: get-setting
-  // TODO: api-terms-of-use
-}
+case class Group(description: String,
+                 displayName: String,
+                 aliasInOwner: Option[String] = None,
+                 groupAliasInOwner: Option[String] = None,
+                 identifier: Option[String] = None,
+                 containedRoleAssignees: List[Any] = List.empty)

@@ -233,4 +233,14 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
   // TODO: delete-workflows-whitelist
   // TODO: clear-metrics-cache [db-name]
   // TODO: add-dataverse-role-assignments-to-children
+
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/admin/dataverses-datasets.html#configure-a-dataset-to-store-all-new-files-in-a-specific-file-store]]
+   * @return
+   */
+  def getStorageDrivers: Try[DataverseResponse[Map[String, String]]] = {
+    trace(())
+    get[Map[String, String]](s"dataverse/storageDrivers")
+  }
 }
