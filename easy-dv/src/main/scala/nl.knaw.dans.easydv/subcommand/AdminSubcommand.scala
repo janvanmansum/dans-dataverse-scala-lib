@@ -22,6 +22,50 @@ class AdminSubcommand extends AbstractSubcommand("admin") {
   shortSubcommandsHelp(true)
   descr("Operations via de admin API. See: https://guides.dataverse.org/en/latest/api/native-api.html#admin")
 
+  // TODO: list-database-settings
+  // TODO: set-database-setting
+  // TODO: get-database-setting
+  // TODO: delete-database-setting
+
+  // TODO: add-banner-message
+  // TODO: get-banner-messages
+  // TODO: delete-banner-message
+  // TODO: deactivate-banner-message
+
+  // TODO: list-authentication-provider-factories
+  // TODO: list-authentication-providers
+  // TODO: add-authentication-provider
+  // TODO: view-authentication-provider
+  // TODO: set-authentication-provider-enabled (true/false)
+  // TODO: is-authentication-provider-enabled (true/false)
+  // TODO: delete-authentication-provider
+
+  // TODO: list-roles
+  // TODO: create-role
+
+  // TODO: list-users
+  // TODO: get-user
+
+  // TODO: create-user
+  // TODO: merge-users
+  // TODO: change-user-identifier
+  // TODO: make-superuser
+  // TODO: delete-user
+
+  // TODO: list-role-assignments (assignee)
+  // TODO: list-permissions (user)
+  // TODO: view-roles-assignee
+
+  // TODO: list-saved-searches
+  // TODO: view-saved-search
+  // TODO: make-links (all/id)
+
+  // TODO: fix-missing-unf
+  // TODO: compute-datafile-hash
+  // TODO: validate-datafile-hash
+  // TODO: validate-dataset-datafile-hashes
+  // TODO: validate-dataset
+
   val getAllWorkflows = new Subcommand("get-all-workflows") {
     descr("Retrieves all the registered workflows")
   }
@@ -69,7 +113,11 @@ class AdminSubcommand extends AbstractSubcommand("admin") {
   }
   addSubcommand(unsetDefaultWorkflow)
 
-  // TODO: the 'whitelist' commands
+  // TODO: set-workflows-whitelist
+  // TODO: get-workflows-whitelist
+  // TODO: delete-workflows-whitelist
+  // TODO: clear-metrics-cache [db-name]
+  // TODO: add-dataverse-role-assignments-to-children// TODO
 
   footer(subCommandFooter)
 }

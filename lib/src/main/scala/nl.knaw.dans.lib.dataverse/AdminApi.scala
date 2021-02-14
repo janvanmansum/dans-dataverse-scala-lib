@@ -31,17 +31,7 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
   protected val apiPrefix: String = "api/admin"
   protected val apiVersion: Option[String] = Option.empty // No version allowed here
 
-  /**
-   * Returns the account data for a single user.
-   *
-   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#list-single-user]]
-   * @param id the user ID
-   * @return
-   */
-  def getSingleUser(id: String): Try[DataverseResponse[model.AuthenticatedUser]] = {
-    trace(id)
-    get[model.AuthenticatedUser](s"authenticatedUsers/$id")
-  }
+  // TODO: list-database-settings
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/installation/config.html#database-settings]]
@@ -68,6 +58,16 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
   /**
    * @see [[https://guides.dataverse.org/en/latest/installation/config.html#database-settings]]
    * @param settingName the name of the setting
+   * @return the current value
+   */
+  def getDatabaseSetting(settingName: String): Try[DataverseResponse[String]] = {
+    ???
+    // TODO: getDatabaseSetting
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/installation/config.html#database-settings]]
+   * @param settingName the name of the setting
    * @return
    */
   def deleteDatabaseSetting(settingName: String): Try[DataverseResponse[Nothing]] = {
@@ -75,15 +75,55 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
     deletePath[Nothing](s"settings/${ settingName }")
   }
 
+  // TODO: add-banner-message
+  // TODO: get-banner-messages
+  // TODO: delete-banner-message
+  // TODO: deactivate-banner-message
+
+  // TODO: list-authentication-provider-factories
+  // TODO: list-authentication-providers
+  // TODO: add-authentication-provider
+  // TODO: view-authentication-provider
+  // TODO: set-authentication-provider-enabled (true/false)
+  // TODO: is-authentication-provider-enabled (true/false)
+  // TODO: delete-authentication-provider
+
+  // TODO: list-roles
+  // TODO: create-role
+
+  // TODO: list-users
+
   /**
-   * @see [[https://guides.dataverse.org/en/latest/installation/config.html#database-settings]]
-   * @param settingName the name of the setting
-   * @return the current value
+   * Returns the account data for a single user.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#list-single-user]]
+   * @param id the user ID
+   * @return
    */
-  def getDatabaseSetting(settingName: String): Try[DataverseResponse[String]] = {
-    ???
-    // TODO: getDatabaseSetting
+  def getSingleUser(id: String): Try[DataverseResponse[model.AuthenticatedUser]] = {
+    trace(id)
+    get[model.AuthenticatedUser](s"authenticatedUsers/$id")
   }
+
+  // TODO: create-user
+  // TODO: merge-users
+  // TODO: change-user-identifier
+  // TODO: make-superuser
+  // TODO: delete-user
+
+  // TODO: list-role-assignments (assignee)
+  // TODO: list-permissions (user)
+  // TODO: view-roles-assignee
+
+  // TODO: list-saved-searches
+  // TODO: view-saved-search
+  // TODO: make-links (all/id)
+
+  // TODO: fix-missing-unf
+  // TODO: compute-datafile-hash
+  // TODO: validate-datafile-hash
+  // TODO: validate-dataset-datafile-hashes
+  // TODO: validate-dataset
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#workflows]]
@@ -187,5 +227,20 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
   def setWorkflowsWhitelist(ips: List[String]): Try[DataverseResponse[Any]] = {
     trace(ips)
     setWorkflowsWhitelist(ips.mkString(";"))
+  }
+
+  // TODO: get-workflows-whitelist
+  // TODO: delete-workflows-whitelist
+  // TODO: clear-metrics-cache [db-name]
+  // TODO: add-dataverse-role-assignments-to-children
+
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/admin/dataverses-datasets.html#configure-a-dataset-to-store-all-new-files-in-a-specific-file-store]]
+   * @return
+   */
+  def getStorageDrivers: Try[DataverseResponse[Map[String, String]]] = {
+    trace(())
+    get[Map[String, String]](s"dataverse/storageDrivers")
   }
 }

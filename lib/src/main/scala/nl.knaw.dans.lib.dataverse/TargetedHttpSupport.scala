@@ -57,11 +57,11 @@ private[dataverse] trait TargetedHttpSupport extends HttpSupport {
    * @tparam D the type of model object to expect in the response message
    * @return
    */
-  protected def getUnversionedFromTarget[D: Manifest](endPoint: String): Try[DataverseResponse[D]] = {
+  protected def getUnversionedFromTarget[D: Manifest](endPoint: String, queryParams: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
     trace(endPoint)
     if (isPersistentId) super.get[D](
       subPath = s"${ targetBase }/:persistentId/${ endPoint }",
-      params = Map("persistentId" -> id),
+      params = Map("persistentId" -> id) ++ queryParams,
       headers = extraHeaders)
     else super.get[D](
       subPath = s"${ targetBase }/$id/${ endPoint }",

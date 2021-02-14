@@ -30,6 +30,14 @@ object File extends DebugEnhancedLogging {
   def dispatch(commandLine: CommandLineOptions, f: FileApi)(implicit resultOutput: PrintStream): Try[FeedBackMessage] = {
     trace(())
     commandLine.subcommands match {
+      // TODO: download
+      // TODO: restrict
+      // TODO: uningest
+      // TODO: reingest
+      // TODO: redetect
+      // TODO: replace
+      // TODO: get-metadata
+
       case commandLine.file :: commandLine.file.`updateMetadata` :: Nil =>
         for {
           fm <- getStringFromStd
@@ -37,6 +45,12 @@ object File extends DebugEnhancedLogging {
           output <- response.string // Result contains non-JSON prefix, so we cannot parse and prettyprint here.
           _ = resultOutput.println(output)
         } yield "update-metadata"
+
+      // TODO: edit-variable-metadata
+      // TODO: get-provenance (json, description)
+      // TODO: add-provenance (json, description)
+      // TODO: delete-provenance (json, description)
+
       case _ => Failure(new RuntimeException(s"Unkown dataverse sub-command: ${ commandLine.args.tail.mkString(" ") }"))
     }
   }

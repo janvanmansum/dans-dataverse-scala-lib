@@ -43,6 +43,9 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
 
   private implicit val jsonFormats: Formats = DefaultFormats
 
+
+  // TODO: download
+
   /**
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#restrict-files]]
    * @param restrict `true` if the file must have restricted access, `false` for open access

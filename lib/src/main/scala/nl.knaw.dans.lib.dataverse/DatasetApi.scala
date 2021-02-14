@@ -136,13 +136,55 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    * Creates or overwrites the current draft's metadata completely.
    *
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#update-metadata-for-a-dataset]]
+   * @param s JSON document containing the updated metadata blocks
+   * @return
+   */
+  def updateMetadata(s: String): Try[DataverseResponse[DatasetVersion]] = {
+    trace(s)
+    // Cheating with endPoint here, because the only version that can be updated is :draft anyway
+    putToTarget[DatasetVersion]("versions/:draft", s)
+  }
+
+  /**
+   * Creates or overwrites the current draft's metadata completely.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#update-metadata-for-a-dataset]]
    * @param metadataBlocks map from metadata block id to `MetadataBlock`
    * @return
    */
   def updateMetadata(metadataBlocks: MetadataBlocks): Try[DataverseResponse[DatasetVersion]] = {
     trace(metadataBlocks)
-    // Cheating with endPoint here, because the only version that can be updated is :draft anyway
-    putToTarget[DatasetVersion]("versions/:draft", Serialization.write(Map("metadataBlocks" -> metadataBlocks)))
+    updateMetadata(Serialization.write(Map("metadataBlocks" -> metadataBlocks)))
+  }
+
+  /**
+   * Edits the current draft's metadata, adding the fields that do not exist yet. If `replace` is set to `false`, all specified
+   * fields must be either currently empty or allow multiple values. Replaces existing data.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#edit-dataset-metadata]]
+   * @param s JSON document containing the edits to perform
+   * @return
+   */
+  def editMetadata(s: String): Try[DataverseResponse[DatasetVersion]] = {
+    trace(s)
+    editMetadata(s, true)
+  }
+
+  /**
+   * Edits the current draft's metadata, adding the fields that do not exist yet. If `replace` is set to `false`, all specified
+   * fields must be either currently empty or allow multiple values.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#edit-dataset-metadata]]
+   * @param s       JSON document containing the edits to perform
+   * @param replace whether to replace existing values
+   * @return
+   */
+  def editMetadata(s: String, replace: Boolean): Try[DataverseResponse[DatasetVersion]] = {
+    trace(s, replace)
+    putToTarget("editMetadata",
+      s,
+      if (replace) Map("replace" -> "true")
+      else Map.empty) // Sic! any value for "replace" is interpreted by Dataverse as "true", even "replace=false"
   }
 
   /**
@@ -151,15 +193,25 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    *
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#edit-dataset-metadata]]
    * @param fields  list of fields to edit
-   * @param replace wether to replace existing values
+   * @param replace whether to replace existing values
    * @return
    */
   def editMetadata(fields: FieldList, replace: Boolean = true): Try[DataverseResponse[DatasetVersion]] = {
     trace(fields)
-    putToTarget("editMetadata",
-      Serialization.write(fields),
-      if (replace) Map("replace" -> "true")
-      else Map.empty) // Sic! any value for "replace" is interpreted by Dataverse as "true", even "replace=false"
+    editMetadata(Serialization.write(fields), replace)
+  }
+
+  /**
+   * Deletes one or more values from the current draft's metadata. Note that the delete will fail if the
+   * result would leave required fields empty.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-dataset-metadata]]
+   * @param s JSON document describing what to delete
+   * @return
+   */
+  def deleteMetadata(s: String): Try[DataverseResponse[DatasetVersion]] = {
+    trace(s)
+    putToTarget("deleteMetadata", s)
   }
 
   /**
@@ -172,7 +224,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    */
   def deleteMetadata(fields: FieldList): Try[DataverseResponse[DatasetVersion]] = {
     trace(fields)
-    putToTarget("deleteMetadata", Serialization.write(fields))
+    deleteMetadata(Serialization.write(fields))
   }
 
   /**
@@ -234,12 +286,22 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#assign-a-new-role-on-a-dataset]]
+   * @param s JSON document describing the assignment
+   * @return
+   */
+  def assignRole(s: String): Try[DataverseResponse[RoleAssignmentReadOnly]] = {
+    trace(s)
+    postJsonToTarget[RoleAssignmentReadOnly]("assignments", s)
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#assign-a-new-role-on-a-dataset]]
    * @param roleAssignment object describing the assignment
    * @return
    */
   def assignRole(roleAssignment: RoleAssignment): Try[DataverseResponse[RoleAssignmentReadOnly]] = {
     trace(roleAssignment)
-    postJsonToTarget[RoleAssignmentReadOnly]("assignments", Serialization.write(roleAssignment))
+    assignRole(Serialization.write(roleAssignment))
   }
 
   /**
@@ -282,8 +344,8 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   }
 
   /**
-   * This function has is called addFileItem to avoid nameing conflicts with addFile. The only difference is that this function takes the
-   * metadata as a string, whereas addFile takes it as a model object.
+   * This function is called addFileItem instead of simply addFile to avoid nameing conflicts with the other addFile function. The only difference is that
+   * this function takes the metadata as a string, whereas addFile takes it as a model object.
    *
    * @see [[  https://guides.dataverse.org/en/latest/api/native-api.html#add-a-file-to-a-dataset]]
    * @param optDataFile     optional file data to upload
@@ -297,7 +359,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   }
 
   /**
-   * @see [[  https://guides.dataverse.org/en/latest/api/native-api.html#add-a-file-to-a-dataset]]
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#add-a-file-to-a-dataset]]
    * @param optDataFile     optional file data to upload
    * @param optFileMetadata optional metadata for the file
    * @return
@@ -306,6 +368,112 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
     trace(optDataFile, optFileMetadata)
     if (optDataFile.isEmpty && optFileMetadata.isEmpty) Failure(new IllegalArgumentException("At least one of file data and file metadata must be provided."))
     addFileItem(optDataFile, optFileMetadata.map(fm => Serialization.write(fm)))
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataset]]
+   * @return
+   */
+  def getStorageSize(includeCached: Boolean = false): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    getUnversionedFromTarget[DataMessage]("storagesize", Map("includeCached" -> includeCached.toString))
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#get-the-size-of-downloading-all-the-files-of-a-dataset-version]]
+   * @return
+   */
+  def getDownloadSize(version: Version = Version.LATEST): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    getVersionedFromTarget[DataMessage]("downloadsize", version)
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#submit-a-dataset-for-review]]
+   * @return
+   */
+  def submitForReview(): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    postJsonToTarget[DataMessage]("submitForReview", "")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#return-a-dataset-to-author]]
+   * @param s JSON document containing the reason for returning the dataset
+   * @return
+   */
+  def returnToAuthor(s: String): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    postJsonToTarget[DataMessage]("returnToAuthor", s)
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#link-a-dataset]]
+   * @param targetDataverse alias of the dataverse in which the link to the dataset should appear
+   * @return
+   */
+  def link(targetDataverse: String): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    putToTarget[DataMessage](s"link/$targetDataverse", "")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#dataset-locks]]
+   * @return
+   */
+  def getLocks: Try[DataverseResponse[List[Lock]]] = {
+    trace(())
+    getUnversionedFromTarget[List[Lock]]("locks")
+  }
+
+  // TODO: metrics. First install/enable Make Data Count ?
+
+  /**
+   * Note: delete on a published dataset with one version also works, if you are a superuser.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-unpublished-dataset]]
+   * @return
+   */
+  def delete(): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    deleteAtTarget[DataMessage]("")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-published-dataset]]
+   * @return
+   */
+  def destroy(): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    deleteAtTarget[DataMessage]("destroy")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/admin/dataverses-datasets.html#configure-a-dataset-to-store-all-new-files-in-a-specific-file-store]]
+   * @return
+   */
+  def getStorageDriver: Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    getUnversionedFromTarget[DataMessage]("storageDriver")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/admin/dataverses-datasets.html#configure-a-dataset-to-store-all-new-files-in-a-specific-file-store]]
+   * @see driver the label of the storage driver to use
+   * @return
+   */
+  def setStorageDriver(driver: String): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    putToTarget[DataMessage]("storageDriver", driver)
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/admin/dataverses-datasets.html#configure-a-dataset-to-store-all-new-files-in-a-specific-file-store]]
+   * @return
+   */
+  def resetStorageDriver(): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    deleteAtTarget[DataMessage]("storageDriver")
   }
 
   /**
@@ -376,23 +544,5 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
     if (maybeLocks.isFailure) maybeLocks.map(_ => ())
     else if (!lockState(maybeLocks.get)) Failure(LockException(numberOfTimesTried, waitTimeInMilliseconds, errorMessage))
          else Success(())
-  }
-
-  /**
-   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#dataset-locks]]
-   * @return
-   */
-  def getLocks: Try[DataverseResponse[List[Lock]]] = {
-    trace(())
-    getUnversionedFromTarget[List[Lock]]("locks")
-  }
-
-  /**
-   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#delete-published-dataset]]
-   * @return
-   */
-  def destroy(): Try[DataverseResponse[DataMessage]] = {
-    trace(())
-    deleteAtTarget[DataMessage]("destroy")
   }
 }

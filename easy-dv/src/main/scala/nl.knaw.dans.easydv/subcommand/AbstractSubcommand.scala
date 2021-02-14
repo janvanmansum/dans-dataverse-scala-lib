@@ -18,6 +18,14 @@ package nl.knaw.dans.easydv.subcommand
 import org.rogach.scallop.Subcommand
 
 abstract class AbstractSubcommand(name: String) extends Subcommand(name) {
+
+  /**
+   * Adds a command with no parameters or options.
+   *
+   * @param name        the name of the command
+   * @param description the description of the command
+   * @return
+   */
   protected def addSimpleCommand(name: String, description: String): Subcommand = {
     val sc = new Subcommand(name) {
       descr(description)
