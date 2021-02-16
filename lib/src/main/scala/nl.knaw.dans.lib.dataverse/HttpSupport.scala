@@ -46,7 +46,7 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
   protected val connectionTimeout: Int
   protected val readTimeout: Int
   protected val baseUrl: URI
-  protected val apiToken: String
+  protected val apiToken: Option[String]
   // If false, it is sent through the X-Dataverse-key header
   protected val sendApiTokenViaBasicAuth: Boolean
   protected val unblockKey: Option[String]
@@ -212,8 +212,8 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
    * @return
    */
   private def maybeIncludeApiKey(headers: Map[String, String]): Map[String, String] = {
-    if (!sendApiTokenViaBasicAuth) headers + (HEADER_X_DATAVERSE_KEY -> apiToken)
-    else headers
+    if (sendApiTokenViaBasicAuth) headers
+    else apiToken.map(t => headers + (HEADER_X_DATAVERSE_KEY -> t)).getOrElse(headers)
   }
 
   /**
@@ -222,7 +222,7 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
    * @return
    */
   private def maybeBasicAuthCredentials(): Option[(String, String)] = {
-    if (sendApiTokenViaBasicAuth) Option(apiToken, "")
+    if (sendApiTokenViaBasicAuth) apiToken.map(t => (t -> ""))
     else Option.empty
   }
 

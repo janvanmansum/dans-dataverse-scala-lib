@@ -25,7 +25,7 @@ class SwordApi private[dataverse](configuration: DataverseInstanceConfig) extend
   protected val connectionTimeout: Int = configuration.connectionTimeout
   protected val readTimeout: Int = configuration.readTimeout
   protected val baseUrl: URI = configuration.baseUrl
-  protected val apiToken: String = configuration.apiToken
+  protected val apiToken: Option[String] = Option(configuration.apiToken)
   protected val apiPrefix: String = "dvn/api/data-deposit"
   protected val sendApiTokenViaBasicAuth = true
   protected val unblockKey: Option[String] = Option.empty

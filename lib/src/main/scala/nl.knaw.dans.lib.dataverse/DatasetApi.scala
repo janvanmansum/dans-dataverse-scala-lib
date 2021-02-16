@@ -39,7 +39,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   protected val connectionTimeout: Int = configuration.connectionTimeout
   protected val readTimeout: Int = configuration.readTimeout
   protected val baseUrl: URI = configuration.baseUrl
-  protected val apiToken: String = configuration.apiToken
+  protected val apiToken: Option[String] = if (workflowId.isDefined) Option.empty else Option(configuration.apiToken)
   protected val sendApiTokenViaBasicAuth = false
   protected val unblockKey: Option[String] = Option.empty
   protected val apiPrefix: String = "api"
@@ -236,7 +236,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    */
   def publish(updateType: UpdateType): Try[DataverseResponse[DatasetPublicationResult]] = {
     trace(updateType)
-    postJsonToTarget[DatasetPublicationResult]("actions/:publish", "", Map("type" -> updateType.toString))
+    postJsonToTarget[DatasetPublicationResult]("actions/:publish", "", Map("type" -> updateType.toString, "assureIsIndexed" -> "true"))
   }
 
   /**

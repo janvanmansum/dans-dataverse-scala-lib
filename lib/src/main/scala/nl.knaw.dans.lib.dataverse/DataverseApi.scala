@@ -28,7 +28,7 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
   protected val connectionTimeout: Int = configuration.connectionTimeout
   protected val readTimeout: Int = configuration.readTimeout
   protected val baseUrl: URI = configuration.baseUrl
-  protected val apiToken: String = configuration.apiToken
+  protected val apiToken: Option[String] = Option(configuration.apiToken)
   protected val sendApiTokenViaBasicAuth = false
   protected val unblockKey: Option[String] = Option.empty
   protected val apiPrefix: String = "api"
