@@ -15,12 +15,16 @@
  */
 package nl.knaw.dans.lib.dataverse
 
+import nl.knaw.dans.lib.dataverse.model.ResumeMessage
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import org.json4s.{ DefaultFormats, Formats }
+import org.json4s.native.Serialization
 
 import java.net.URI
 import scala.util.Try
 
 class WorkflowsApi private[dataverse](configuration: DataverseInstanceConfig) extends HttpSupport with DebugEnhancedLogging {
+  private implicit val jsonFormats: Formats = DefaultFormats
   protected val connectionTimeout: Int = configuration.connectionTimeout
   protected val readTimeout: Int = configuration.readTimeout
   protected val baseUrl: URI = configuration.baseUrl
@@ -43,5 +47,10 @@ class WorkflowsApi private[dataverse](configuration: DataverseInstanceConfig) ex
     trace(invocationId, fail)
     postText(s"workflows/$invocationId", body = if (fail) "fail"
                                                 else "")
+  }
+
+  def resume(invocationId: String, msg: ResumeMessage): Try[DataverseResponse[Nothing]] = {
+    trace(invocationId, msg)
+    postText(s"workflows/$invocationId", body = Serialization.writePretty(msg))
   }
 }
