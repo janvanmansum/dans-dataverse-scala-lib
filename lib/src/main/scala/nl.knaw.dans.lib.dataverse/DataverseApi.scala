@@ -102,9 +102,9 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataverse]]
    * @return
    */
-  def storageSize(): Try[DataverseResponse[Nothing]] = {
+  def storageSize(): Try[DataverseResponse[DataMessage]] = {
     trace(())
-    get[Nothing](s"dataverses/$dvId/storagesize")
+    get[DataMessage](s"dataverses/$dvId/storagesize")
   }
 
   /**
@@ -193,9 +193,9 @@ class DataverseApi private[dataverse](dvId: String, configuration: DataverseInst
    * @param role the role to assign
    * @return
    */
-  def setDefaultRole(role: DefaultRole): Try[DataverseResponse[Nothing]] = {
+  def setDefaultRole(role: DefaultRole): Try[DataverseResponse[DataMessage]] = {
     trace(role)
-    put[Nothing](s"dataverses/$dvId/defaultContributorRole/$role")(null)
+    put[DataMessage](s"dataverses/$dvId/defaultContributorRole/$role", body = "")
   }
 
   /**

@@ -18,12 +18,14 @@ package nl.knaw.dans.easydv.dispatcher
 import nl.knaw.dans.easydv.Command.FeedBackMessage
 import nl.knaw.dans.easydv.CommandLineOptions
 import nl.knaw.dans.lib.dataverse.DataverseApi
+import nl.knaw.dans.lib.dataverse.model.DefaultRole
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
 import java.io.PrintStream
 import scala.util.{ Failure, Try }
+import scala.language.reflectiveCalls
 
 object Dataverse extends DebugEnhancedLogging {
   private implicit val jsonFormats: Formats = DefaultFormats
@@ -57,20 +59,30 @@ object Dataverse extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "contents"
-
-
-      // TODO: storage-size
-
+      case commandLine.dataverse :: commandLine.dataverse.storageSize :: Nil =>
+        for {
+          response <- dv.storageSize()
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "storage-size"
       case commandLine.dataverse :: commandLine.dataverse.listRoles :: Nil =>
         for {
           response <- dv.listRoles()
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "list-roles"
-
-      // TODO: list-facets
-      // TODO: set-facets
-
+      case commandLine.dataverse :: commandLine.dataverse.listFacets :: Nil =>
+        for {
+          response <- dv.listFacets()
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "list-facets"
+      case commandLine.dataverse :: (c @ commandLine.dataverse.setFacets) :: Nil =>
+        for {
+          response <- dv.setFacets(c.facets())
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "set-facets"
       case commandLine.dataverse :: commandLine.dataverse.createRole :: Nil =>
         for {
           dvDef <- getStringFromStd
@@ -79,9 +91,19 @@ object Dataverse extends DebugEnhancedLogging {
           json <- response.json
           _ = resultOutput.println(Serialization.writePretty(json))
         } yield "create-role"
-
-      // TODO: list-role-assignments
-      // TODO: set-default-role
+      case commandLine.dataverse :: commandLine.dataverse.listRoleAssignments :: Nil =>
+        for {
+          response <- dv.listRoleAssignments()
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "list-role-assignments"
+      case commandLine.dataverse :: (c @ commandLine.dataverse.setDefaultRole) :: Nil =>
+        for {
+          defaultRole <- Try { DefaultRole.withName(c.role().toLowerCase) }
+          response <- dv.setDefaultRole(defaultRole)
+          json <- response.json
+          _ = resultOutput.println(Serialization.writePretty(json))
+        } yield "set-default-role"
       // TODO: assign-role
       // TODO: delete-role-assignment
       // TODO: list-metadata-blocks

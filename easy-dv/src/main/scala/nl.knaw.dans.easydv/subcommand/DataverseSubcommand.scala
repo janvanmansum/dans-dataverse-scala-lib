@@ -16,7 +16,7 @@
 package nl.knaw.dans.easydv.subcommand
 
 import nl.knaw.dans.easydv.subCommandFooter
-import org.rogach.scallop.ScallopOption
+import org.rogach.scallop.{ ScallopOption, Subcommand }
 
 class DataverseSubcommand extends AbstractSubcommand("dataverse") {
   shortSubcommandsHelp(true)
@@ -36,36 +36,31 @@ class DataverseSubcommand extends AbstractSubcommand("dataverse") {
   val contents = addSimpleCommand(
     name = "contents",
     description = "Displays dataverse contents. See: https://guides.dataverse.org/en/latest/api/native-api.html#show-contents-of-a-dataverse")
-
-  // TODO: storage-size
   val storageSize = addSimpleCommand(
     name = "storage-size",
     description = "Displays the storages size in bytes for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataverse")
-
   val listRoles = addSimpleCommand(
     name = "list-roles",
     description = "Lists roles defined in dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-roles-defined-in-a-dataverse")
-
-  // TODO: list-facets
   val listFacets = addSimpleCommand(
     name = "list-facets",
     description = "Lists facets for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-facets-configured-for-a-dataverse")
-
-  // TODO: set-facets
-
+  val setFacets = new Subcommand("set-facets") {
+    descr("Sets facets for the dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#set-facets-for-a-dataverse")
+    val facets: ScallopOption[List[String]] = trailArg(name = "facets", descr = "the facets to set")
+  }
+  addSubcommand(setFacets)
   val createRole = addSimpleCommand(
     name = "create-role",
     description = "Creates a role based on the JSON definition on STDIN. See: https://guides.dataverse.org/en/latest/api/native-api.html#create-a-new-role-in-a-dataverse")
-
-  // TODO: list-role-assignments
   val listRoleAssignments = addSimpleCommand(
     name = "list-role-assignments",
     description = "List all the role assignments at the given dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#list-role-assignments-in-a-dataverse")
-
-  // TODO: set-default-role
-  val setDefaultRole = addSimpleCommand(
-    name = "set-default-role",
-    description = "Assigns a default role to a user creating a dataset in a dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#assign-default-role-to-user-creating-a-dataset-in-a-dataverse")
+  val setDefaultRole = new Subcommand("set-default-role") {
+    descr("Assigns a default role to a user creating a dataset in a dataverse. See: https://guides.dataverse.org/en/latest/api/native-api.html#assign-default-role-to-user-creating-a-dataset-in-a-dataverse")
+    val role: ScallopOption[String] = trailArg(name = "roleAlias", descr = "the alias of the role to set as default")
+  }
+  addSubcommand(setDefaultRole)
 
   // TODO: assign-role
   val assignRole = addSimpleCommand(
