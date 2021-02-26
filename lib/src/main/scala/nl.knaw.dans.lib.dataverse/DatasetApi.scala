@@ -230,13 +230,19 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   /**
    * Publishes the current draft of a dataset as a new version.
    *
+   * If publish is called shortly after a modification and there is a pre-publication workflow installed, there is a risk of the workflow failing to
+   * start because of an OptimisticLockException. This is caused by Dataverse indexing the dataset on a separate thread. This will appear to the client
+   * as Dataverse silently failing (i.e. returning success but not publishing the dataset). To make sure that indexing has already happened the `assureIsIndexed`
+   * parameter is set to `true`. It will cause Dataverse to fail fast if indexing is still pending.
+   *
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#publish-a-dataset]]
    * @param updateType major or minor version update
+   * @param assureIsIndexed make Dataverse return 409 Conflict if an index action is pending
    * @return
    */
-  def publish(updateType: UpdateType): Try[DataverseResponse[DatasetPublicationResult]] = {
+  def publish(updateType: UpdateType, assureIsIndexed: Boolean = true): Try[DataverseResponse[DatasetPublicationResult]] = {
     trace(updateType)
-    postJsonToTarget[DatasetPublicationResult]("actions/:publish", "", Map("type" -> updateType.toString, "assureIsIndexed" -> "true"))
+    postJsonToTarget[DatasetPublicationResult]("actions/:publish", "", Map("type" -> updateType.toString, "assureIsIndexed" -> assureIsIndexed.toString))
   }
 
   /**
