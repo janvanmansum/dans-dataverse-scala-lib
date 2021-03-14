@@ -17,6 +17,7 @@ package nl.knaw.dans.lib.dataverse
 
 import better.files.File
 import org.json4s.{ DefaultFormats, Formats }
+import scalaj.http.HttpResponse
 
 import scala.util.Try
 
@@ -64,6 +65,17 @@ private[dataverse] trait TargetedHttpSupport extends HttpSupport {
       params = Map("persistentId" -> id) ++ queryParams,
       headers = extraHeaders)
     else super.get[D](
+      subPath = s"${ targetBase }/$id/${ endPoint }",
+      headers = extraHeaders)
+  }
+
+  protected def getUnwrappedFromTarget(endPoint: String, queryParams: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = {
+    trace(endPoint)
+    if (isPersistentId) super.getUnwrapped(
+      subPath = s"${ targetBase }/:persistentId/${ endPoint }",
+      params = Map("persistentId" -> id) ++ queryParams,
+      headers = extraHeaders)
+    else super.getUnwrapped(
       subPath = s"${ targetBase }/$id/${ endPoint }",
       headers = extraHeaders)
   }
