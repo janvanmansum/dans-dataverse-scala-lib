@@ -25,5 +25,24 @@ case class DataFile(id: Int,
                     storageIdentifier: String,
                     rootDataFileId: Int,
                     checksum: Checksum,
-                    creationDate: String)
+                    creationDate: String) {
+
+  /**
+   * Converts the DataFile to the format required for registering prestaged files with Dataverse. Note that not
+   * all fields are used in this format.
+   *
+   * @return metadata for a prestaged file.
+   */
+  def toPrestaged: prestaged.DataFile = {
+    prestaged.DataFile(
+      storageIdentifier,
+      fileName = filename,
+      mimeType = contentType,
+      checksum = prestaged.Checksum(
+        `@type` = checksum.`type`,
+        `@value` = checksum.value
+      ),
+      fileSize = filesize)
+  }
+}
 
