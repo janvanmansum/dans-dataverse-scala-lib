@@ -19,15 +19,17 @@ import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
-object  ViewRootDataverse extends App with DebugEnhancedLogging with BaseApp {
+object ViewDatasetAllVersions extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
+  private val persistentId = args(0)
+
   val result = for {
-    response <- server.dataverse("root").view()
-    _ = logger.info(s"Raw response message: ${ response.string }")
+    response <- server.dataset(persistentId).viewAllVersions()
+    _ = logger.info(s"Raw response: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
-    dataverse <- response.data
-    _ = logger.info(s"Description of the dataverse: '${ dataverse.description.getOrElse("NO DESCRIPTION FOUND") }'")
+    datasetVersions <- response.data
+    _ = logger.info(s"Version numbers: ${datasetVersions.map(v => s"${v.versionNumber.getOrElse(0)}.${v.versionMinorNumber.getOrElse(0)}").mkString(", ")}")
   } yield ()
   logger.info(s"result = $result")
 }

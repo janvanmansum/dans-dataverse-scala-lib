@@ -17,7 +17,7 @@ package nl.knaw.dans.lib.dataverse
 
 import better.files.File
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import scalaj.http.{ Http, HttpRequest, MultiPart, MultiPartConnectFunc }
+import scalaj.http.{ Http, HttpRequest, HttpResponse, MultiPart, MultiPartConnectFunc }
 
 import java.io.FileInputStream
 import java.net.URI
@@ -95,6 +95,16 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
     } yield response
   }
 
+  protected def getUnwrapped(subPath: String = null,
+                             headers: Map[String, String] = Map.empty,
+                             params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = {
+   trace(subPath)
+    for {
+      uri <- createUri(Option(subPath))
+      response <- bodylessRequestUnwrapped(METHOD_GET, uri, headers, params)
+    } yield response
+  }
+
   protected def postJson[D: Manifest](subPath: String = null,
                                       body: String = null,
                                       headers: Map[String, String] = Map.empty,
@@ -159,6 +169,13 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
     dispatchHttp(Http(uri.toASCIIString).method(method), headers, params)
   }
 
+  private def bodylessRequestUnwrapped(method: String,
+                                           uri: URI,
+                                           headers: Map[String, String] = Map.empty,
+                                           params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = {
+    dispatchHttpUnwrapped(Http(uri.toASCIIString).method(method), headers, params)
+  }
+
   private def putString[D: Manifest](uri: URI,
                                      body: String = null,
                                      headers: Map[String, String] = Map.empty,
@@ -186,9 +203,30 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
       params)
   }
 
+  /**
+   * Handles requests that return JSON with the usual envelope
+   *
+   * ```json
+   * {
+   *   "status":  "OK",
+   *   "data" : {
+   *      // The payload of the response
+   *   }
+   * ```
+   */
   private def dispatchHttp[D: Manifest](baseRequest: HttpRequest,
                                         headers: Map[String, String] = Map.empty,
-                                        params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = Try {
+                                        params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] =  {
+    trace(headers, params)
+    dispatchHttpUnwrapped(baseRequest, headers, params).map(r => DataverseResponse[D](r))
+  }
+
+  /**
+   * Generic dispatcher of API calls that does *not* presume the response is put in an envelope.
+   */
+  private def dispatchHttpUnwrapped[D: Manifest](baseRequest: HttpRequest,
+                                        headers: Map[String, String] = Map.empty,
+                                        params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = Try {
     trace(headers, params)
     val optBasicAuthCredentials = maybeBasicAuthCredentials()
     val headersPlusMaybeApiKey = maybeIncludeApiKey(headers)
@@ -201,7 +239,7 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
     val response = optBasicAuthCredentials
       .map { case (u, p) => request.auth(u, p) }
       .getOrElse(request).asBytes
-    if (response.code >= 200 && response.code < 300) DataverseResponse(response)
+    if (response.code >= 200 && response.code < 300) response
     else throw DataverseException(response.code, new String(response.body, StandardCharsets.UTF_8), response)
   }
 

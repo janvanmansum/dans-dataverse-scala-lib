@@ -20,10 +20,11 @@ import nl.knaw.dans.lib.dataverse.model.DataMessage
 import nl.knaw.dans.lib.dataverse.model.dataset.FileList
 import nl.knaw.dans.lib.dataverse.model.file.{ DetectionResult, FileMeta, Provenance }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import org.json4s.native.Serialization
+import org.json4s.native.{ JsonMethods, Serialization }
 import org.json4s.{ DefaultFormats, Formats }
 
 import java.net.URI
+import java.nio.charset.StandardCharsets
 import scala.util.Try
 import scala.xml.Elem
 
@@ -100,12 +101,19 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
   }
 
   /**
+   * Note: for some reason, the Dataverse's response is not wrapped in the usual envelope here.
+   *
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#getting-file-metadata]]
    * @return
    */
-  def getMetadata: Try[DataverseResponse[FileMeta]] = {
-    ???
-    // TODO: getMetadata
+  def getMetadata: Try[FileMeta] = {
+    trace(())
+    for {
+      response <- getUnwrappedFromTarget("metadata")
+      bodyString <- Try { new String(response.body, StandardCharsets.UTF_8) }
+      json <- Try { JsonMethods.parse(bodyString) }
+      fileMeta <- Try { json.extract[FileMeta] }
+    }  yield fileMeta
   }
 
   /**

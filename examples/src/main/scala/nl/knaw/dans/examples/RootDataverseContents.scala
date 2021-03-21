@@ -19,15 +19,15 @@ import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
-object  ViewRootDataverse extends App with DebugEnhancedLogging with BaseApp {
+object RootDataverseContents extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
   val result = for {
-    response <- server.dataverse("root").view()
+    response <- server.dataverse("root").contents()
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
-    dataverse <- response.data
-    _ = logger.info(s"Description of the dataverse: '${ dataverse.description.getOrElse("NO DESCRIPTION FOUND") }'")
+    items <- response.data
+    _ = logger.info(s"Number of dataverses: ${items.count(_.`type` == "dataverse")}, datasets: ${items.count(_.`type` == "dataset")}, files: ${items.count(_.`type` == "file")}")
   } yield ()
   logger.info(s"result = $result")
 }
