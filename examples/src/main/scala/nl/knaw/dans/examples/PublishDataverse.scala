@@ -15,19 +15,22 @@
  */
 package nl.knaw.dans.examples
 
+import nl.knaw.dans.lib.dataverse.model.dataset.UpdateType
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
-object  ViewRootDataverse extends App with DebugEnhancedLogging with BaseApp {
+object PublishDataverse extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
+  private val alias = args(0)
+
   val result = for {
-    response <- server.dataverse("root").view()
+    response <- server.dataverse(alias).publish()
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     dataverse <- response.data
-    _ = logger.info(s"Description of the dataverse: '${ dataverse.description.getOrElse("NO DESCRIPTION FOUND") }'")
+    _ = logger.info(s"Creation date: ${ dataverse.creationDate }")
   } yield ()
   logger.info(s"result = $result")
 }

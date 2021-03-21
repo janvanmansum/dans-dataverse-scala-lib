@@ -176,7 +176,6 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
     dispatchHttpUnwrapped(Http(uri.toASCIIString).method(method), headers, params)
   }
 
-
   private def putString[D: Manifest](uri: URI,
                                      body: String = null,
                                      headers: Map[String, String] = Map.empty,
@@ -204,32 +203,27 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
       params)
   }
 
+  /**
+   * Handles requests that return JSON with the usual envelope
+   *
+   * ```json
+   * {
+   *   "status":  "OK",
+   *   "data" : {
+   *      // The payload of the response
+   *   }
+   * ```
+   */
   private def dispatchHttp[D: Manifest](baseRequest: HttpRequest,
-                                        headers: Map[String, String] = Map.empty,
-                                        params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = Try {
-    trace(headers, params)
-    val optBasicAuthCredentials = maybeBasicAuthCredentials()
-    val headersPlusMaybeApiKey = maybeIncludeApiKey(headers)
-    val paramsPlusMaybeUnblockKey = maybeIncludeUnblockKey(params)
-
-    val request = baseRequest
-      .headers(headersPlusMaybeApiKey)
-      .params(paramsPlusMaybeUnblockKey)
-      .timeout(connTimeoutMs = connectionTimeout, readTimeoutMs = readTimeout)
-    val response = optBasicAuthCredentials
-      .map { case (u, p) => request.auth(u, p) }
-      .getOrElse(request).asBytes
-    if (response.code >= 200 && response.code < 300) DataverseResponse(response)
-    else throw DataverseException(response.code, new String(response.body, StandardCharsets.UTF_8), response)
-  }
-
-  private def dispatchHttp2[D: Manifest](baseRequest: HttpRequest,
                                         headers: Map[String, String] = Map.empty,
                                         params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] =  {
     trace(headers, params)
     dispatchHttpUnwrapped(baseRequest, headers, params).map(r => DataverseResponse[D](r))
   }
 
+  /**
+   * Generic dispatcher of API calls that does *not* presume the response is put in an envelope.
+   */
   private def dispatchHttpUnwrapped[D: Manifest](baseRequest: HttpRequest,
                                         headers: Map[String, String] = Map.empty,
                                         params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = Try {
