@@ -385,7 +385,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    * @param prestagedFile a prestaged.DataFile object
    * @return
    */
-  def addFile(prestagedFile: DataFile): Try[DataverseResponse[FileList]] = {
+  def registerPrestagedFile(prestagedFile: DataFile): Try[DataverseResponse[FileList]] = {
     trace(prestagedFile)
     addFileItem(Option.empty, Option(Serialization.write(prestagedFile)))
   }
