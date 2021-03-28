@@ -20,6 +20,7 @@ import nl.knaw.dans.lib.dataverse.model._
 import nl.knaw.dans.lib.dataverse.model.dataset.UpdateType.UpdateType
 import nl.knaw.dans.lib.dataverse.model.dataset.{ DatasetLatestVersion, DatasetVersion, FieldList, FileList, MetadataBlock, MetadataBlocks, PrivateUrlData }
 import nl.knaw.dans.lib.dataverse.model.file.FileMeta
+import nl.knaw.dans.lib.dataverse.model.file.prestaged.DataFile
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
@@ -374,6 +375,19 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
     trace(optDataFile, optFileMetadata)
     if (optDataFile.isEmpty && optFileMetadata.isEmpty) Failure(new IllegalArgumentException("At least one of file data and file metadata must be provided."))
     addFileItem(optDataFile, optFileMetadata.map(fm => Serialization.write(fm)))
+  }
+
+  /**
+   * Adds a pre-staged file using a slightly modified JSON for DataFile.
+   *
+   * TODO: Add pointer to documentation once this is published
+   *
+   * @param prestagedFile a prestaged.DataFile object
+   * @return
+   */
+  def registerPrestagedFile(prestagedFile: DataFile): Try[DataverseResponse[FileList]] = {
+    trace(prestagedFile)
+    addFileItem(Option.empty, Option(Serialization.write(prestagedFile)))
   }
 
   /**
