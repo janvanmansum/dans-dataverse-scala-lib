@@ -18,6 +18,7 @@ package nl.knaw.dans.lib.dataverse
 import better.files.File
 import nl.knaw.dans.lib.dataverse.model.DataMessage
 import nl.knaw.dans.lib.dataverse.model.dataset.FileList
+import nl.knaw.dans.lib.dataverse.model.file.prestaged.DataFile
 import nl.knaw.dans.lib.dataverse.model.file.{ DetectionResult, FileMeta, Provenance }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.{ JsonMethods, Serialization }
@@ -91,14 +92,22 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
    * and pass it back to Dataverse as the `fileMetadata` argument.
    *
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#replacing-files]]
-   * @param dataFile       the replacement file
+   * @param file       the replacement file
    * @param fileMedataData the replacement metadata
    * @return
    */
-  def replace(dataFile: File, fileMedataData: FileMeta): Try[DataverseResponse[FileList]] = {
-    trace(dataFile, fileMedataData)
-    postFileToTarget("replace", Option(dataFile), Option(Serialization.write(fileMedataData)))
+  def replace(file: File, fileMedataData: FileMeta): Try[DataverseResponse[FileList]] = {
+    trace(file, fileMedataData)
+    postFileToTarget("replace", Option(file), Option(Serialization.write(fileMedataData)))
   }
+
+  def replaceWithPrestagedFile(replacementDataFile: DataFile): Try[DataverseResponse[FileList]] = {
+    trace(replacementDataFile)
+    // TODO: implement
+    ???
+  }
+
+
 
   /**
    * Note: for some reason, the Dataverse's response is not wrapped in the usual envelope here.

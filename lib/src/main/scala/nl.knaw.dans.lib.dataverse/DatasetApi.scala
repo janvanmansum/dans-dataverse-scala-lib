@@ -385,7 +385,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    * @param prestagedFile a prestaged.DataFile object
    * @return
    */
-  def registerPrestagedFile(prestagedFile: DataFile): Try[DataverseResponse[FileList]] = {
+  def addPrestagedFile(prestagedFile: DataFile): Try[DataverseResponse[FileList]] = {
     trace(prestagedFile)
     addFileItem(Option.empty, Option(Serialization.write(prestagedFile)))
   }
@@ -524,7 +524,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    */
   def awaitLock(lockType: String, maxNumberOfRetries: Int = awaitLockStateMaxNumberOfRetries, waitTimeInMilliseconds: Int = awaitLockStateMillisecondsBetweenRetries): Try[Unit] = {
     trace(maxNumberOfRetries, waitTimeInMilliseconds)
-    awaitLockState(_.exists(_.lockType == lockType), s"Wait for lock fo type $lockType expired")
+    awaitLockState(_.exists(_.lockType == lockType), s"Wait for lock of type $lockType expired")
   }
 
   /**
