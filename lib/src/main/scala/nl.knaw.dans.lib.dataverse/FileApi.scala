@@ -25,7 +25,7 @@ import org.json4s.{ DefaultFormats, Formats }
 
 import java.net.URI
 import java.nio.charset.StandardCharsets
-import scala.util.Try
+import scala.util.{ Failure, Try }
 import scala.xml.Elem
 
 class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, configuration: DataverseInstanceConfig) extends TargetedHttpSupport with DebugEnhancedLogging {
@@ -43,7 +43,6 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
   protected val isPersistentId: Boolean = isPersistentFileId
 
   private implicit val jsonFormats: Formats = DefaultFormats
-
 
   // TODO: download
 
@@ -91,13 +90,14 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
    * and pass it back to Dataverse as the `fileMetadata` argument.
    *
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#replacing-files]]
-   * @param dataFile       the replacement file
-   * @param fileMedataData the replacement metadata
+   * @param optDataFile           the replacement file
+   * @param optFileMetadata the replacement metadata
    * @return
    */
-  def replace(dataFile: File, fileMedataData: FileMeta): Try[DataverseResponse[FileList]] = {
-    trace(dataFile, fileMedataData)
-    postFileToTarget("replace", Option(dataFile), Option(Serialization.write(fileMedataData)))
+  def replace(optDataFile: Option[File] = Option.empty, optFileMetadata: Option[FileMeta] = Option.empty): Try[DataverseResponse[FileList]] = {
+    trace(optDataFile, optFileMetadata)
+    if (optDataFile.isEmpty && optFileMetadata.isEmpty) Failure(new IllegalArgumentException("At least one of file data and file metadata must be provided."))
+    postFileToTarget("replace", optDataFile, optFileMetadata.map(m => Serialization.writePretty(m)))
   }
 
   /**
@@ -113,7 +113,7 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
       bodyString <- Try { new String(response.body, StandardCharsets.UTF_8) }
       json <- Try { JsonMethods.parse(bodyString) }
       fileMeta <- Try { json.extract[FileMeta] }
-    }  yield fileMeta
+    } yield fileMeta
   }
 
   /**
