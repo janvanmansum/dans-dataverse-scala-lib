@@ -30,6 +30,7 @@ object ViewDatasetAllVersions extends App with DebugEnhancedLogging with BaseApp
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
     datasetVersions <- response.data
     _ = logger.info(s"Version numbers: ${datasetVersions.map(v => s"${v.versionNumber.getOrElse(0)}.${v.versionMinorNumber.getOrElse(0)}").mkString(", ")}")
+    _ = logger.info(s"Data files: ${datasetVersions.map(v => v.files.map(_.dataFile).mkString(", "))}")
   } yield ()
   logger.info(s"result = $result")
 }
