@@ -24,14 +24,14 @@ import org.json4s.{ DefaultFormats, Formats }
 object ReplaceFile extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
   private val databaseId = args(0).toInt
-  private val filePath = File(args(1))
+  private val file = File(args(1))
   private val directoryLabel = args(2)
   private val fileMetadata = FileMeta(
     directoryLabel = Option(directoryLabel),
-    label = Option(filePath.name))
+    label = Option(file.name))
 
   val result = for {
-    response <- server.file(databaseId).replace(filePath, fileMetadata)
+    response <- server.file(databaseId).replace(Option(file), Option(fileMetadata))
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")

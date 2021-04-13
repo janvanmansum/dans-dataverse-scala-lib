@@ -351,7 +351,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   }
 
   /**
-   * This function is called addFileItem instead of simply addFile to avoid nameing conflicts with the other addFile function. The only difference is that
+   * This function is called addFileItem instead of simply addFile to avoid naming conflicts with the other addFile function. The only difference is that
    * this function takes the metadata as a string, whereas addFile takes it as a model object.
    *
    * @see [[  https://guides.dataverse.org/en/latest/api/native-api.html#add-a-file-to-a-dataset]]
