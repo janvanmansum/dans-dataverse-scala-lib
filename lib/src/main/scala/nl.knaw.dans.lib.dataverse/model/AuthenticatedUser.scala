@@ -18,15 +18,15 @@ package nl.knaw.dans.lib.dataverse.model
 case class AuthenticatedUser(id: Int,
                              identifier: String,
                              displayName: String,
-                             firstName: String,
-                             lastName: String,
+                             firstName: Option[String] = None,
+                             lastName: Option[String] = None,
                              email: String,
                              superuser: Boolean,
-                             affiliation: String,
-                             position: String,
-                             persistentUserId: String,
+                             affiliation: Option[String] = None,
+                             position: Option[String] = None,
+                             persistentUserId: Option[String] = None,
                              createdTime: String,
-                             lastLoginTime: String,
-                             lastApiUseTime: String,
-                             authenticationProviderId: String)
+                             lastLoginTime: Option[String] = None,
+                             lastApiUseTime: Option[String] = None,
+                             authenticationProviderId: Option[String] = None)
 

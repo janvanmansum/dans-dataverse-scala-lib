@@ -92,17 +92,36 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
    * @param optFileMetadata the replacement metadata
    * @return
    */
-  def replace(optDataFile: Option[File] = Option.empty, optFileMetadata: Option[FileMeta] = Option.empty): Try[DataverseResponse[FileList]] = {
+  def replaceFileItem(optDataFile: Option[File] = Option.empty, optFileMetadata: Option[String] = Option.empty): Try[DataverseResponse[FileList]] = {
     trace(optDataFile, optFileMetadata)
     if (optDataFile.isEmpty && optFileMetadata.isEmpty) Failure(new IllegalArgumentException("At least one of file data and file metadata must be provided."))
-    postFileToTarget("replace", optDataFile, optFileMetadata.map(m => Serialization.writePretty(m)))
+    postFileToTarget("replace", optDataFile, optFileMetadata)
   }
 
-  def replaceWithPrestagedFile(replacementDataFile: DataFile): Try[DataverseResponse[FileList]] = {
-    trace(replacementDataFile)
-    // TODO: implement
-    ???
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#replacing-files]]
+   * @param optDataFile           the replacement file
+   * @param optFileMetadata the replacement metadata
+   * @return
+   */
+  def replace(optDataFile: Option[File] = Option.empty, optFileMetadata: Option[FileMeta] = Option.empty): Try[DataverseResponse[FileList]] = {
+    trace(optDataFile, optFileMetadata)
+    replaceFileItem(optDataFile, optFileMetadata.map(m => Serialization.writePretty(m)))
   }
+
+  /**
+   * Replaces a file with a pre-staged file using a slightly modified JSON for DataFile.
+   *
+   * TODO: Add pointer to documentation once this is published
+   *
+   * @param prestagedFile a prestaged.DataFile object
+   * @return
+   */
+  def replaceWithPrestagedFile(prestagedFile: DataFile): Try[DataverseResponse[FileList]] = {
+    trace(prestagedFile)
+    replaceFileItem(Option.empty, Option(Serialization.write(prestagedFile)))
+  }
+
 
   /**
    * Note: for some reason, the Dataverse's response is not wrapped in the usual envelope here.
