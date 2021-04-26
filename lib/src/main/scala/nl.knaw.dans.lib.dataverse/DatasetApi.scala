@@ -259,9 +259,9 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    * @param assureIsIndexed       make Dataverse return 409 Conflict if an index action is pending
    * @return
    */
-  def releaseMigrated(publicationDateJsonLd: String, assureIsIndexed: Boolean = true) = {
+  def releaseMigrated(publicationDateJsonLd: String, assureIsIndexed: Boolean = true): Try[DataverseResponse[DatasetPublicationResult]] = {
     trace(publicationDateJsonLd)
-    postJsonToTarget[DatasetPublicationResult]("actions/:releasemigrated", publicationDateJsonLd, Map("Content-Type" -> "application/json-ld", "assureIsIndexed" -> assureIsIndexed.toString))
+    postJsonToTarget[DatasetPublicationResult]("actions/:releasemigrated", publicationDateJsonLd, queryParams = Map("assureIsIndexed" -> assureIsIndexed.toString), isJsonLd = true)
   }
 
   /**

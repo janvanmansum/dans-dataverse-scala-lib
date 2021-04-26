@@ -80,17 +80,19 @@ private[dataverse] trait TargetedHttpSupport extends HttpSupport {
       headers = extraHeaders)
   }
 
-  protected def postJsonToTarget[D: Manifest](endPoint: String, body: String, queryParams: Map[String, String] = Map.empty, headers: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
+  protected def postJsonToTarget[D: Manifest](endPoint: String, body: String, queryParams: Map[String, String] = Map.empty, headers: Map[String, String] = Map.empty, isJsonLd: Boolean = false): Try[DataverseResponse[D]] = {
     if (isPersistentId) super.postJson[D](
       subPath = s"${ targetBase }/:persistentId/${ endPoint }",
       body,
       params = Map("persistentId" -> id) ++ queryParams,
-      headers = extraHeaders ++ headers)
+      headers = extraHeaders ++ headers,
+      isJsonLd = isJsonLd)
     else super.postJson[D](
       subPath = s"${ targetBase }/$id/${ endPoint }",
       body,
       params = queryParams,
-      headers = extraHeaders ++ headers)
+      headers = extraHeaders ++ headers,
+      isJsonLd = isJsonLd)
   }
 
   protected def postFileToTarget[D: Manifest](endPoint: String, optFile: Option[File], optMetadata: Option[String], queryParams: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
