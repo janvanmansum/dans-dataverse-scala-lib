@@ -508,7 +508,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    */
   def awaitUnlock(maxNumberOfRetries: Int = awaitLockStateMaxNumberOfRetries, waitTimeInMilliseconds: Int = awaitLockStateMillisecondsBetweenRetries): Try[Unit] = {
     trace(maxNumberOfRetries, waitTimeInMilliseconds)
-    awaitLockState(_.isEmpty, "Wait for unlock expired")
+    awaitLockState(_.isEmpty, "Wait for unlock expired", maxNumberOfRetries, waitTimeInMilliseconds)
   }
 
   /**
@@ -524,7 +524,7 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
    */
   def awaitLock(lockType: String, maxNumberOfRetries: Int = awaitLockStateMaxNumberOfRetries, waitTimeInMilliseconds: Int = awaitLockStateMillisecondsBetweenRetries): Try[Unit] = {
     trace(maxNumberOfRetries, waitTimeInMilliseconds)
-    awaitLockState(_.exists(_.lockType == lockType), s"Wait for lock of type $lockType expired")
+    awaitLockState(_.exists(_.lockType == lockType), s"Wait for lock of type $lockType expired", maxNumberOfRetries, waitTimeInMilliseconds)
   }
 
   /**
