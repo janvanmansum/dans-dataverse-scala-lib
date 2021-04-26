@@ -17,7 +17,7 @@ package nl.knaw.dans.lib.dataverse
 
 import better.files.File
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import scalaj.http.{ Http, HttpRequest, HttpResponse, MultiPart, MultiPartConnectFunc }
+import scalaj.http._
 
 import java.io.FileInputStream
 import java.net.URI
@@ -35,6 +35,7 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
   private val PARAM_UNBLOCK_KEY = "unblock-key"
 
   private val MEDIA_TYPE_JSON = "application/json"
+  private val MEDIA_TYPE_JSON_LD = "application/json-ld"
   private val MEDIA_TYPE_OCTET_STREAM = "application/octet-stream"
   private val MEDIA_TYPE_TEXT = "text/plain"
 
@@ -98,7 +99,7 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
   protected def getUnwrapped(subPath: String = null,
                              headers: Map[String, String] = Map.empty,
                              params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = {
-   trace(subPath)
+    trace(subPath)
     for {
       uri <- createUri(Option(subPath))
       response <- bodylessRequestUnwrapped(METHOD_GET, uri, headers, params)
@@ -109,10 +110,14 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
                                       body: String = null,
                                       headers: Map[String, String] = Map.empty,
                                       params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
+
+    val mediaType = if (headers.exists(_._2 == MEDIA_TYPE_JSON_LD)) MEDIA_TYPE_JSON_LD
+                    else MEDIA_TYPE_JSON
+
     trace(subPath, body)
     for {
       uri <- createUri(Option(subPath))
-      response <- postString[D](uri, body, headers ++ Map(HEADER_CONTENT_TYPE -> MEDIA_TYPE_JSON), params)
+      response <- postString[D](uri, body, headers ++ Map(HEADER_CONTENT_TYPE -> mediaType), params)
     } yield response
   }
 
@@ -170,9 +175,9 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
   }
 
   private def bodylessRequestUnwrapped(method: String,
-                                           uri: URI,
-                                           headers: Map[String, String] = Map.empty,
-                                           params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = {
+                                       uri: URI,
+                                       headers: Map[String, String] = Map.empty,
+                                       params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = {
     dispatchHttpUnwrapped(Http(uri.toASCIIString).method(method), headers, params)
   }
 
@@ -208,15 +213,15 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
    *
    * ```json
    * {
-   *   "status":  "OK",
-   *   "data" : {
-   *      // The payload of the response
-   *   }
+   * "status":  "OK",
+   * "data" : {
+   * // The payload of the response
+   * }
    * ```
    */
   private def dispatchHttp[D: Manifest](baseRequest: HttpRequest,
                                         headers: Map[String, String] = Map.empty,
-                                        params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] =  {
+                                        params: Map[String, String] = Map.empty): Try[DataverseResponse[D]] = {
     trace(headers, params)
     dispatchHttpUnwrapped(baseRequest, headers, params).map(r => DataverseResponse[D](r))
   }
@@ -225,8 +230,8 @@ private[dataverse] trait HttpSupport extends DebugEnhancedLogging {
    * Generic dispatcher of API calls that does *not* presume the response is put in an envelope.
    */
   private def dispatchHttpUnwrapped[D: Manifest](baseRequest: HttpRequest,
-                                        headers: Map[String, String] = Map.empty,
-                                        params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = Try {
+                                                 headers: Map[String, String] = Map.empty,
+                                                 params: Map[String, String] = Map.empty): Try[HttpResponse[Array[Byte]]] = Try {
     trace(headers, params)
     val optBasicAuthCredentials = maybeBasicAuthCredentials()
     val headersPlusMaybeApiKey = maybeIncludeApiKey(headers)
