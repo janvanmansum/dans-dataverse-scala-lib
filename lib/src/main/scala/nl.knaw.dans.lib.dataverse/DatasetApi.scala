@@ -247,19 +247,6 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
     postJsonToTarget[DatasetPublicationResult]("actions/:publish", "", Map("type" -> updateType.toString, "assureIsIndexed" -> assureIsIndexed.toString))
   }
 
-  //TODO: in Dataverse implement support for assureIsIndexed parameter
-  /**
-   * Publishes the current draft of an imported dataset as a new version with the original publication date.
-   *
-   * @param publicationDateJsonLd original publication date
-   * @param assureIsIndexed       make Dataverse return 409 Conflict if an index action is pending
-   * @return
-   */
-  def releaseMigrated(publicationDateJsonLd: String, assureIsIndexed: Boolean = true) = {
-    trace(publicationDateJsonLd)
-    postJsonToTarget[DatasetPublicationResult]("actions/:releasemigrated", publicationDateJsonLd, headers = Map("Content-Type" -> "application/json-ld"))
-  }
-
   /**
    * Publishes the current draft of an imported dataset as a new version with the original publication date.
    *
