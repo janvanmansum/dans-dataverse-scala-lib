@@ -64,4 +64,8 @@ class DataverseInstance(config: DataverseInstanceConfig) extends DebugEnhancedLo
   def workflows(): WorkflowsApi = {
     new WorkflowsApi(config)
   }
+
+  def search(): SearchApi = {
+    new SearchApi(config)
+  }
 }

@@ -17,6 +17,7 @@ package nl.knaw.dans.lib.dataverse
 
 import nl.knaw.dans.lib.dataverse.model.DataverseMessage
 import nl.knaw.dans.lib.dataverse.model.dataset.MetadataFieldSerializer
+import nl.knaw.dans.lib.dataverse.model.search.ResultItemSerializer
 import org.json4s.native.JsonMethods
 import org.json4s.{ DefaultFormats, Formats, JValue }
 import scalaj.http.HttpResponse
@@ -38,7 +39,7 @@ import scala.util.Try
  * @tparam D the model object type that can be extracted (if none is available, this is set to `Any`).
  */
 case class DataverseResponse[D: Manifest] private[dataverse](httpResponse: HttpResponse[Array[Byte]]) {
-  private implicit val jsonFormats: Formats = DefaultFormats + MetadataFieldSerializer
+  private implicit val jsonFormats: Formats = DefaultFormats + MetadataFieldSerializer + ResultItemSerializer
 
   /**
    * The body of the response, decoded as UTF-8 string.
@@ -61,7 +62,7 @@ case class DataverseResponse[D: Manifest] private[dataverse](httpResponse: HttpR
    */
   def data: Try[D] = {
     json
-      .map(_.extract[DataverseMessage[D]])
+      .map(_.camelizeKeys.extract[DataverseMessage[D]])
       .map(_.data.get)
   }
 

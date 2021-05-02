@@ -15,6 +15,28 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-class SearchApi {
-  // TODO: SearchApi
+import nl.knaw.dans.lib.dataverse.model.search.{ ResultItemSerializer, SearchResult }
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import org.json4s.{ DefaultFormats, Formats }
+
+import java.net.URI
+import scala.util.Try
+
+class SearchApi private[dataverse](configuration: DataverseInstanceConfig) extends HttpSupport with DebugEnhancedLogging {
+  trace(())
+  private implicit val jsonFormats: Formats = DefaultFormats
+  protected val connectionTimeout: Int = configuration.connectionTimeout
+  protected val readTimeout: Int = configuration.readTimeout
+  protected val baseUrl: URI = configuration.baseUrl
+  protected val apiToken: Option[String] = Option(configuration.apiToken)
+  protected val sendApiTokenViaBasicAuth = false
+  protected val unblockKey: Option[String] = Option.empty
+  protected val apiPrefix: String = "api"
+  protected val apiVersion: Option[String] = Option(configuration.apiVersion)
+
+  def find(query: String): Try[DataverseResponse[SearchResult]] = {
+    trace(query)
+    get[SearchResult]("search", params = Map("q" -> query))
+  }
+
 }
