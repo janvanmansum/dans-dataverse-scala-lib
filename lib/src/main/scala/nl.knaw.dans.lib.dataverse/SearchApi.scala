@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.lib.dataverse
 
-import nl.knaw.dans.lib.dataverse.model.search.{ ResultItemSerializer, SearchResult }
+import nl.knaw.dans.lib.dataverse.model.search.SearchResult
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.{ DefaultFormats, Formats }
 
@@ -34,9 +34,15 @@ class SearchApi private[dataverse](configuration: DataverseInstanceConfig) exten
   protected val apiPrefix: String = "api"
   protected val apiVersion: Option[String] = Option(configuration.apiVersion)
 
+  /**
+   * Very limited first implementation of the search API.
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/search.html]]
+   * @param query the search query
+   * @return
+   */
   def find(query: String): Try[DataverseResponse[SearchResult]] = {
     trace(query)
     get[SearchResult]("search", params = Map("q" -> query))
   }
-
 }
