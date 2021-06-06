@@ -15,10 +15,40 @@
  */
 package nl.knaw.dans.lib.dataverse.model.file
 
+import nl.knaw.dans.lib.dataverse.model.file.prestaged.PrestagedFile
+
 case class FileMeta(label: Option[String] = None,
                     description: Option[String] = None,
                     directoryLabel: Option[String] = None,
                     restrict: Option[Boolean] = None,
                     categories: List[String] = List.empty[String],
                     dataFile: Option[DataFile] = None,
-                    forceReplace: Boolean = false)
+                    forceReplace: Boolean = false) {
+
+  /**
+   * Converts this FileMeta to a PrestagedFile object
+   *
+   * @return a PrestagedFile object
+   * @throws IllegalArgumentException if the FileMeta has no dataFile field
+   */
+  def toPrestaged: PrestagedFile = {
+    if (dataFile.isEmpty) throw new IllegalArgumentException("FileMeta has no dataFile, cannot convert to PrestagedFile")
+    else {
+      val df = dataFile.get
+      PrestagedFile(
+        storageIdentifier = df.storageIdentifier,
+        fileName = label.get,
+        mimeType = df.contentType,
+        checksum = prestaged.Checksum(
+          `@type` = df.checksum.`type`,
+          `@value` = df.checksum.value
+        ),
+        description = description,
+        directoryLabel = directoryLabel,
+        categories = categories,
+        restrict = restrict.getOrElse(false),
+        forceReplace = forceReplace
+      )
+    }
+  }
+}

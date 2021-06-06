@@ -18,7 +18,7 @@ package nl.knaw.dans.lib.dataverse
 import better.files.File
 import nl.knaw.dans.lib.dataverse.model.DataMessage
 import nl.knaw.dans.lib.dataverse.model.dataset.FileList
-import nl.knaw.dans.lib.dataverse.model.file.prestaged.DataFile
+import nl.knaw.dans.lib.dataverse.model.file.prestaged.PrestagedFile
 import nl.knaw.dans.lib.dataverse.model.file.{ DetectionResult, FileMeta, Provenance }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.{ JsonMethods, Serialization }
@@ -110,14 +110,14 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
   }
 
   /**
-   * Replaces a file with a pre-staged file using a slightly modified JSON for DataFile.
+   * Replaces a file with a pre-staged file.
    *
    * @see [[https://guides.dataverse.org/en/latest/developers/s3-direct-upload-api.html#replacing-an-existing-file-in-the-dataset]]
    *
-   * @param prestagedFile a prestaged.DataFile object
+   * @param prestagedFile metadata about the prestaged file
    * @return
    */
-  def replaceWithPrestagedFile(prestagedFile: DataFile): Try[DataverseResponse[FileList]] = {
+  def replaceWithPrestagedFile(prestagedFile: PrestagedFile): Try[DataverseResponse[FileList]] = {
     trace(prestagedFile)
     replaceFileItem(Option.empty, Option(Serialization.write(prestagedFile)))
   }

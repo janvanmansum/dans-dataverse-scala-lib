@@ -15,38 +15,31 @@
  */
 package nl.knaw.dans.examples
 
-import nl.knaw.dans.lib.dataverse.model.file.prestaged.Checksum
+import nl.knaw.dans.lib.dataverse.model.file.prestaged.{ Checksum, PrestagedFile }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
 
 /**
- * Before executing this code you must create the replacement file at
- *
- * s3://bucket-name/DOI-of-dataset/storage-identifier
- *
- * with appropriate values for bucket-name, DOI-of-dataset and storage-identifier.
- *
- * Not tested for file storage, but that should work similarly.
  *
  */
-object ReplaceFileWithPrestaged extends App with DebugEnhancedLogging with BaseApp {
+object AddPrestagedFile extends App with DebugEnhancedLogging with BaseApp {
   private implicit val jsonFormats: Formats = DefaultFormats
   private val doi = args(0)
-  private val databaseId = args(1).toInt
-  private val storageId = args(2)
-  private val sha1Checksum = args(3)
-  private val optMimeType = if (args.length > 4) Option(args(4))
-                            else None
-
+  private val storageIdentifier = args(1)
+  private val label = args(2)
+  private val mimeType = args(3)
+  private val sha1 = args(4)
+  private val prestagedFile = PrestagedFile(
+    storageIdentifier,
+    fileName = label,
+    mimeType,
+    checksum = new Checksum(
+      `@type` = "SHA-1",
+      `@value` = sha1
+    ))
   val result = for {
-    response <- server.dataset(doi).listFiles()
-    fileMetas <- response.data
-    fileMeta = fileMetas.find(_.dataFile.exists(_.id == databaseId)).get
-    prestagedFile = optMimeType.map(m => fileMeta.toPrestaged.copy(mimeType = m, forceReplace = true)) // To force a new mime-type forceReplace must be true
-      .getOrElse(fileMeta.toPrestaged)
-      .copy(storageIdentifier = storageId, checksum = Checksum(`@type` = "SHA-1", `@value` = sha1Checksum))
-    response <- server.file(databaseId).replaceWithPrestagedFile(prestagedFile)
+    response <- server.dataset(doi).addPrestagedFile(prestagedFile)
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")

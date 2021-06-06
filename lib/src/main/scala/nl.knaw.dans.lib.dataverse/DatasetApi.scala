@@ -20,7 +20,7 @@ import nl.knaw.dans.lib.dataverse.model._
 import nl.knaw.dans.lib.dataverse.model.dataset.UpdateType.UpdateType
 import nl.knaw.dans.lib.dataverse.model.dataset.{ DatasetLatestVersion, DatasetVersion, FieldList, FileList, MetadataBlock, MetadataBlocks, PrivateUrlData }
 import nl.knaw.dans.lib.dataverse.model.file.FileMeta
-import nl.knaw.dans.lib.dataverse.model.file.prestaged.DataFile
+import nl.knaw.dans.lib.dataverse.model.file.prestaged.PrestagedFile
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.native.Serialization
 import org.json4s.{ DefaultFormats, Formats }
@@ -396,17 +396,18 @@ class DatasetApi private[dataverse](datasetId: String, isPersistentDatasetId: Bo
   }
 
   /**
-   * Adds a pre-staged file using a slightly modified JSON for DataFile.
+   * Adds a pre-staged file
    *
-   * TODO: Add pointer to documentation once this is published
+   * @see [[https://guides.dataverse.org/en/latest/developers/s3-direct-upload-api.html#adding-the-uploaded-file-to-the-dataset]]
    *
-   * @param prestagedFile a prestaged.DataFile object
+   * @param prestagedFile metadata about the prestaged file
    * @return
    */
-  def addPrestagedFile(prestagedFile: DataFile): Try[DataverseResponse[FileList]] = {
+  def addPrestagedFile(prestagedFile: PrestagedFile): Try[DataverseResponse[FileList]] = {
     trace(prestagedFile)
     addFileItem(Option.empty, Option(Serialization.write(prestagedFile)))
   }
+
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#report-the-data-file-size-of-a-dataset]]

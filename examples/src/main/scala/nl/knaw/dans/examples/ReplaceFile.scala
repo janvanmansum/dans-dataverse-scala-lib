@@ -26,9 +26,11 @@ object ReplaceFile extends App with DebugEnhancedLogging with BaseApp {
   private val databaseId = args(0).toInt
   private val file = File(args(1))
   private val directoryLabel = args(2)
+  private val force = Option(args(3)).exists(_.toBoolean)
   private val fileMetadata = FileMeta(
     directoryLabel = Option(directoryLabel),
-    label = Option(file.name))
+    label = Option(file.name),
+    forceReplace = force)
 
   val result = for {
     response <- server.file(databaseId).replace(Option(file), Option(fileMetadata))
