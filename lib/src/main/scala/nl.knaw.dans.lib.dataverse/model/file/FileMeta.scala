@@ -20,4 +20,5 @@ case class FileMeta(label: Option[String] = None,
                     directoryLabel: Option[String] = None,
                     restrict: Option[Boolean] = None,
                     categories: List[String] = List.empty[String],
-                    dataFile: Option[DataFile] = None)
+                    dataFile: Option[DataFile] = None,
+                    forceReplace: Boolean = false)
