@@ -112,7 +112,7 @@ class FileApi private[dataverse](filedId: String, isPersistentFileId: Boolean, c
   /**
    * Replaces a file with a pre-staged file using a slightly modified JSON for DataFile.
    *
-   * TODO: Add pointer to documentation once this is published
+   * @see [[https://guides.dataverse.org/en/latest/developers/s3-direct-upload-api.html#replacing-an-existing-file-in-the-dataset]]
    *
    * @param prestagedFile a prestaged.DataFile object
    * @return
