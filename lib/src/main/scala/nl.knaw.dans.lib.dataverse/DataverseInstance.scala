@@ -68,4 +68,20 @@ class DataverseInstance(config: DataverseInstanceConfig) extends DebugEnhancedLo
   def search(): SearchApi = {
     new SearchApi(config)
   }
+
+  def access(pid: String): DataAccessApi = {
+    new DataAccessApi(pid, isPersistentFileId = true, config)
+  }
+
+  def access(id: Int): DataAccessApi = {
+    new DataAccessApi(id.toString, isPersistentFileId = false, config)
+  }
+
+  def accessRequests(pid: String): DataAccessRequestsApi = {
+    new DataAccessRequestsApi(pid, isPersistentFileId = true, config)
+  }
+
+  def accessAccessRequests(id: Int): DataAccessRequestsApi = {
+    new DataAccessRequestsApi(id.toString, isPersistentFileId = false, config)
+  }
 }
