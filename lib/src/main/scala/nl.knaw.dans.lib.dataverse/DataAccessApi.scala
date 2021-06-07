@@ -35,4 +35,7 @@ class DataAccessApi private[dataverse](filedId: String, isPersistentFileId: Bool
   override protected val targetBase: String = "datafiles"
   override protected val id: String = filedId
   override protected val isPersistentId: Boolean = isPersistentFileId
+
+
+  // TODO: implement the end points that target files.
 }

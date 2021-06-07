@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.lib.dataverse
 
+import nl.knaw.dans.lib.dataverse.model.{ DataMessage, DataverseMessage }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.{ DefaultFormats, Formats }
 
@@ -37,12 +38,24 @@ class DataAccessRequestsApi private[dataverse](datasetId: String, isPersistentFi
   override protected val id: String = datasetId
   override protected val isPersistentId: Boolean = isPersistentFileId
 
-  def enable(): Try[DataverseResponse[Any]] = {
+  /**
+   * Enables access requests for the targetted dataset
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/dataaccess.html#allow-access-requests]]
+   * @return
+   */
+  def enable(): Try[DataverseResponse[DataMessage]] = {
     trace(())
     putToTarget("allowAccessRequest", "true")
   }
 
-  def disable(): Try[DataverseResponse[Any]] = {
+  /**
+   * Disables access requests for the targettted dataset
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/dataaccess.html#allow-access-requests]]
+   * @return
+   */
+  def disable(): Try[DataverseResponse[DataMessage]] = {
     trace(())
     putToTarget("allowAccessRequest", "false")
   }

@@ -31,6 +31,8 @@ object EnableAccessRequests extends App with DebugEnhancedLogging with BaseApp {
     _ = logger.info(s"Raw response message: ${ response.string }")
     _ = logger.info(s"JSON AST: ${ response.json }")
     _ = logger.info(s"JSON serialized: ${ Serialization.writePretty(response.json) }")
+    msg <- response.data
+    _ = logger.info(s"Dataverse says '${msg.message}'")
   } yield ()
   logger.info(s"result = $result")
 }
