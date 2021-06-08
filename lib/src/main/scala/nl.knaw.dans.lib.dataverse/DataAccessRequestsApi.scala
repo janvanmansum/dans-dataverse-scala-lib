@@ -15,12 +15,14 @@
  */
 package nl.knaw.dans.lib.dataverse
 
+import nl.knaw.dans.lib.dataverse.model.{ DataMessage, DataverseMessage }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.json4s.{ DefaultFormats, Formats }
 
 import java.net.URI
+import scala.util.Try
 
-class DataAccessApi private[dataverse](filedId: String, isPersistentFileId: Boolean, configuration: DataverseInstanceConfig) extends TargetedHttpSupport with DebugEnhancedLogging {
+class DataAccessRequestsApi private[dataverse](datasetId: String, isPersistentFileId: Boolean, configuration: DataverseInstanceConfig) extends TargetedHttpSupport with DebugEnhancedLogging {
   trace(())
   private implicit val jsonFormats: Formats = DefaultFormats
 
@@ -30,12 +32,31 @@ class DataAccessApi private[dataverse](filedId: String, isPersistentFileId: Bool
   protected val apiToken: Option[String] = Option(configuration.apiToken)
   protected val sendApiTokenViaBasicAuth = false
   protected val unblockKey: Option[String] = Option.empty
-  protected val apiPrefix: String = "api/access"
+  protected val apiPrefix: String = "api"
   protected val apiVersion: Option[String] = Option(configuration.apiVersion)
-  override protected val targetBase: String = "datafiles"
-  override protected val id: String = filedId
+  override protected val targetBase: String = "access"
+  override protected val id: String = datasetId
   override protected val isPersistentId: Boolean = isPersistentFileId
 
+  /**
+   * Enables access requests for the targetted dataset
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/dataaccess.html#allow-access-requests]]
+   * @return
+   */
+  def enable(): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    putToTarget("allowAccessRequest", "true")
+  }
 
-  // TODO: implement the end points that target files.
+  /**
+   * Disables access requests for the targettted dataset
+   *
+   * @see [[https://guides.dataverse.org/en/latest/api/dataaccess.html#allow-access-requests]]
+   * @return
+   */
+  def disable(): Try[DataverseResponse[DataMessage]] = {
+    trace(())
+    putToTarget("allowAccessRequest", "false")
+  }
 }
