@@ -39,7 +39,7 @@ class DataAccessRequestsApi private[dataverse](datasetId: String, isPersistentFi
   override protected val isPersistentId: Boolean = isPersistentFileId
 
   /**
-   * Enables access requests for the targetted dataset
+   * Enables access requests for the targeted dataset
    *
    * @see [[https://guides.dataverse.org/en/latest/api/dataaccess.html#allow-access-requests]]
    * @return
