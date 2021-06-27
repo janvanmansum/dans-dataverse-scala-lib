@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.lib.dataverse
 
+import nl.knaw.dans.lib.dataverse.banner.{ BannerMessage, DisplayedText }
 import nl.knaw.dans.lib.dataverse.model.{ DataMessage, DatabaseSetting, Workflow }
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
@@ -31,7 +32,15 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
   protected val apiPrefix: String = "api/admin"
   protected val apiVersion: Option[String] = Option.empty // No version allowed here
 
-  // TODO: list-database-settings
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#list-all-database-settings]]
+   *
+   * @return
+   */
+  def listDatabaseSettings(): Try[DataverseResponse[Map[String, String]]] = {
+    trace(())
+    get[Map[String, String]]("settings")
+  }
 
   /**
    * @see [[https://guides.dataverse.org/en/latest/installation/config.html#database-settings]]
@@ -60,9 +69,9 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
    * @param settingName the name of the setting
    * @return the current value
    */
-  def getDatabaseSetting(settingName: String): Try[DataverseResponse[String]] = {
-    ???
-    // TODO: getDatabaseSetting
+  def getDatabaseSetting(settingName: String): Try[DataverseResponse[DataMessage]] = {
+    trace(settingName)
+    get[DataMessage](s"settings/$settingName")
   }
 
   /**
@@ -75,10 +84,53 @@ class AdminApi private[dataverse](configuration: DataverseInstanceConfig) extend
     deletePath[Nothing](s"settings/${ settingName }")
   }
 
-  // TODO: add-banner-message
-  // TODO: get-banner-messages
-  // TODO: delete-banner-message
-  // TODO: deactivate-banner-message
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#manage-banner-messages]]
+   * @return
+   */
+  def addBannerMessage(bannerMessage: String): Try[DataverseResponse[DataMessage]] = {
+    trace(bannerMessage)
+    postJson[DataMessage](subPath = "bannerMessage", body = bannerMessage)
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#manage-banner-messages]]
+   * @return
+   */
+  def addBannerMessage(bannerMessage: BannerMessage): Try[DataverseResponse[DataMessage]] = {
+    trace(bannerMessage)
+    for {
+      json <- serializeAsJson(bannerMessage, logger.underlying.isDebugEnabled)
+      response <- addBannerMessage(json)
+    } yield response
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#manage-banner-messages]]
+   * @return
+   */
+  def listBannerMessages(): Try[DataverseResponse[List[DisplayedText]]] = {
+    trace(())
+    get[List[DisplayedText]]("bannerMessage")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#manage-banner-messages]]
+   * @return
+   */
+  def deleteBannerMessage(id: Int): Try[DataverseResponse[DataMessage]] = {
+    trace(id)
+    deletePath[DataMessage](s"bannerMessage/$id")
+  }
+
+  /**
+   * @see [[https://guides.dataverse.org/en/latest/api/native-api.html#manage-banner-messages]]
+   * @return
+   */
+  def deactivateBannerMessage(id: Int): Try[DataverseResponse[DataMessage]] = {
+    trace(id)
+    put[DataMessage](s"bannerMessage/$id/deactivate", body = "")
+  }
 
   // TODO: list-authentication-provider-factories
   // TODO: list-authentication-providers
